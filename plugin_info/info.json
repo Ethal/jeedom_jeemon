@@ -1,0 +1,8 @@
+{
+	"id" : "jeemon",
+	"name" : "Jeedom Watcher",
+	"licence" : "AGPL",
+	"author" : "lunarok",
+	"require" : "2.4",
+	"category" : "devicecommunication"
+}
