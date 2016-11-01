@@ -93,9 +93,9 @@ class jeemon extends eqLogic {
         foreach ($this->getCmd() as $cmd) {
             $id = $cmd->getLogicalId();
             $result = $this->getExecCmd($id);
-            $this->getExecCmd($id,$result);
-            log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $status);
-            $this->checkAndUpdateCmd($id, $status);
+            $this->alertCmd($id,$result);
+            log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $result);
+            $this->checkAndUpdateCmd($id, $result);
         }
     }
 }
