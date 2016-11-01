@@ -20,7 +20,7 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class jeemon extends eqLogic {
     public function cron() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->readStatus($jeemon->getConfiguration('addr'));
+            $jeemon->checkJeemon();
         }
     }
 
