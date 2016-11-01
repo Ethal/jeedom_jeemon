@@ -18,7 +18,7 @@
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class jeemon extends eqLogic {
-    public function cron() {
+    public function cron15() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
             $jeemon->checkJeemon();
         }
@@ -57,7 +57,7 @@ class jeemon extends eqLogic {
         switch ($id) {
             case 'backup':
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
-            $result = shell_exec('if find ' . $backup_path . ' -mtime -1 | read; then echo "1"; else echo "0"; fi');
+            $result = shell_exec('if sudo find ' . $backup_path . ' -mtime -1 | read; then echo "1"; else echo "0"; fi');
             break;
             case 'space':
             $space = shell_exec('sudo df -h / | tail -n 1');
