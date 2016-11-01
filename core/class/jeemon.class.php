@@ -58,20 +58,22 @@ class jeemon extends eqLogic {
             case 'backup':
             $result = shell_exec('if find /usr/share/nginx/www/jeedom/backup -mtime -1 | read; then echo "1"; else echo "0"; fi');
             break;
-            case 'logerr':
-            $result = '';
-            break;
-            case 'cpu':
-            $result = '';
-            break;
-            case 'load':
-            $result = '';
-            break;
             case 'space':
             $space = shell_exec('sudo df -h / | tail -n 1');
             $pattern = '/([1-9]*?)\%/';
             preg_match($pattern, $space, $matches);
             $result = $matches[1];
+            break;
+        }
+        return $result;
+    }
+
+    public function getExecAlert($id,$result) {
+        switch ($id) {
+            case 'backup':
+            if ($result == 0) {
+                $this->alertCmd('Pas de sauvegarde depuis 24h');
+            }
             break;
         }
         return $result;
@@ -91,6 +93,7 @@ class jeemon extends eqLogic {
         foreach ($this->getCmd() as $cmd) {
             $id = $cmd->getLogicalId();
             $result = $this->getExecCmd($id);
+            $this->getExecCmd($id,$result);
             log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $status);
             $this->checkAndUpdateCmd($id, $status);
         }
