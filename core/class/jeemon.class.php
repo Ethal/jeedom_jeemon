@@ -56,7 +56,8 @@ class jeemon extends eqLogic {
     public function getExecCmd($id) {
         switch ($id) {
             case 'backup':
-            $result = shell_exec('if find /usr/share/nginx/www/jeedom/backup -mtime -1 | read; then echo "1"; else echo "0"; fi');
+            $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
+            $result = shell_exec('if find ' . $backup_path . ' -mtime -1 | read; then echo "1"; else echo "0"; fi');
             break;
             case 'space':
             $space = shell_exec('sudo df -h / | tail -n 1');
