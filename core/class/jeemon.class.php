@@ -65,6 +65,7 @@ class jeemon extends eqLogic {
             $result = $matches[1];
             break;
         }
+        var_dump($result);
         return $result;
     }
 
