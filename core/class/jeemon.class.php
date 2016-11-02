@@ -18,7 +18,7 @@
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
 class jeemon extends eqLogic {
-    public function cron15() {
+    public function cronHourly() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
             $jeemon->checkJeemon();
         }
@@ -26,12 +26,46 @@ class jeemon extends eqLogic {
 
     public function postUpdate() {
         $this->checkCmdOk('backup','Sauvegarde de moins de 24h','binary');
-        $this->checkCmdOk('space','Espace disque utilisé','numeric');
+        $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric');
+        $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric');
+        $this->checkCmdOk('tmp_type','Type de montage /tmp','string');
         //log ERROR
         //tmp state
         //memory
         //cpu
         //uptime
+        /*
+        for folder in php5 php7; do
+		for subfolder in apache2 cli; do
+	    	if [ -f /etc/${folder}/${subfolder}/php.ini ]; then
+	    		echo "Update php file /etc/${folder}/${subfolder}/php.ini"
+				sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 1G/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/post_max_size = 8M/post_max_size = 1G/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/expose_php = On/expose_php = Off/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/;opcache.enable=0/opcache.enable=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/opcache.enable=0/opcache.enable=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/;opcache.enable_cli=0/opcache.enable_cli=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+			    sed -i 's/opcache.enable_cli=0/opcache.enable_cli=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
+	    	fi
+		done
+        done*/
+        /*
+        if [ -d /etc/mysql/conf.d ]; then
+    	touch /etc/mysql/conf.d/jeedom_my.cnf
+    	echo "[mysqld]" >> /etc/mysql/conf.d/jeedom_my.cnf
+    	echo "key_buffer_size = 16M" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "thread_cache_size = 16" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "tmp_table_size = 48M" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "max_heap_table_size = 48M" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "query_cache_type =1" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "query_cache_size = 16M" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "query_cache_limit = 2M" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "query_cache_min_res_unit=3K" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "innodb_flush_method = O_DIRECT" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "innodb_flush_log_at_trx_commit = 2" >> /etc/mysql/conf.d/jeedom_my.cnf
+		echo "innodb_log_file_size = 32M" >> /etc/mysql/conf.d/jeedom_my.cnf
+        fi*/
         $this->checkJeemon();
     }
 
@@ -57,13 +91,22 @@ class jeemon extends eqLogic {
         switch ($id) {
             case 'backup':
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
-            $result = shell_exec('if sudo find ' . $backup_path . ' -mtime -1 | read; then echo "1"; else echo "0"; fi');
+            $result = shell_exec('if `sudo find ' . $backup_path . ' -mtime -1 | read`; then echo "1"; else echo "0"; fi');
             break;
-            case 'space':
+            case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
             $pattern = '/([1-9]*?)\%/';
             preg_match($pattern, $space, $matches);
             $result = $matches[1];
+            break;
+            case 'tmp_space':
+            $space = shell_exec('sudo df -h /tmp | tail -n 1');
+            $pattern = '/([1-9]*?)\%/';
+            preg_match($pattern, $space, $matches);
+            $result = $matches[1];
+            break;
+            case 'tmp_type':
+            $result = shell_exec("sudo df -h /tmp | tail -n 1 | awk '{print $1}'");
             break;
         }
         var_dump($result);
@@ -78,7 +121,6 @@ class jeemon extends eqLogic {
             }
             break;
         }
-        return $result;
     }
 
     public function alertCmd($alert) {
