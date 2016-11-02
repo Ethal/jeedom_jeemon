@@ -64,7 +64,7 @@ class jeemon extends eqLogic {
         }
         $jeemonCmd->setSubType($_type);
         $jeemonCmd->setUnite($_unite);
-        $jeemonCmd->setConfiguration('cron,'$_cron);
+        $jeemonCmd->setConfiguration('cron',$_cron);
         $jeemonCmd->save();
     }
 
