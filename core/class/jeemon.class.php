@@ -29,8 +29,9 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric');
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string');
+        $this->checkCmdOk('uptime','Durée depuis dernier reboot','numeric');
+        $this->checkCmdOk('cpuload','Charge CPU sur 15mn','numeric');
         //log ERROR
-        //tmp state
         //memory
         //cpu
         //uptime
@@ -108,8 +109,20 @@ class jeemon extends eqLogic {
             case 'tmp_type':
             $result = shell_exec("sudo df -h /tmp | tail -n 1 | awk '{print $1}'");
             break;
+            case 'uptime':
+            $uptime_string = shell_exec('uptime');
+            $pattern = '/load average: (.*), (.*), (.*)$/';
+    		preg_match($pattern, $uptime_string, $matches);
+            $result = $matches[3];
+            break;
+            case 'cpuload':
+            $uptime_string = shell_exec('uptime');
+            $pattern = '/up (.*?),/';
+    		preg_match($pattern, $uptime_string, $matches);
+            $result = $matches[1];
+            break;
+
         }
-        var_dump($result);
         return $result;
     }
 
@@ -125,8 +138,7 @@ class jeemon extends eqLogic {
 
     public function alertCmd($alert) {
         if ($this->getConfiguration('alert') != "") {
-            $alert = str_replace('#','',$this->getConfiguration('alert'));
-            $cmdalerte = cmd::byId($alert);
+            $cmdalerte = cmd::byId(str_replace('#','',$this->getConfiguration('alert')));
             $options['title'] = "Alerte Jeedom";
             $options['message'] = $alert;
             $cmdalerte->execCmd($options);
