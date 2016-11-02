@@ -109,13 +109,13 @@ class jeemon extends eqLogic {
             case 'tmp_type':
             $result = shell_exec("sudo df -h /tmp | tail -n 1 | awk '{print $1}'");
             break;
-            case 'uptime':
+            case 'cpuload':
             $uptime_string = shell_exec('uptime');
             $pattern = '/load average: (.*), (.*), (.*)$/';
     		preg_match($pattern, $uptime_string, $matches);
             $result = $matches[3];
             break;
-            case 'cpuload':
+            case 'uptime':
             $uptime_string = shell_exec('uptime');
             $pattern = '/up (.*?),/';
     		preg_match($pattern, $uptime_string, $matches);
@@ -149,7 +149,7 @@ class jeemon extends eqLogic {
         foreach ($this->getCmd() as $cmd) {
             $id = $cmd->getLogicalId();
             $result = $this->getExecCmd($id);
-            $this->alertCmd($id,$result);
+            $this->getExecAlert($id,$result);
             log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $result);
             $this->checkAndUpdateCmd($id, $result);
         }
