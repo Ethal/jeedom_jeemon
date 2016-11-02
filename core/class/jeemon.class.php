@@ -20,57 +20,35 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class jeemon extends eqLogic {
     public function cronHourly() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon();
+            $jeemon->checkJeemon('hourly');
+        }
+    }
+
+    public function cron15() {
+        foreach (eqLogic::byType('jeemon', true) as $jeemon) {
+            $jeemon->checkJeemon('15');
+        }
+    }
+
+    public function cronDaily() {
+        foreach (eqLogic::byType('jeemon', true) as $jeemon) {
+            $jeemon->checkJeemon('daily');
         }
     }
 
     public function postUpdate() {
-        $this->checkCmdOk('backup','Sauvegarde de moins de 24h','binary');
-        $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric');
-        $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric');
-        $this->checkCmdOk('tmp_type','Type de montage /tmp','string');
-        $this->checkCmdOk('uptime','Durée depuis dernier reboot','numeric');
-        $this->checkCmdOk('cpuload','Charge CPU sur 15mn','numeric');
-        //log ERROR
-        //memory
-        //cpu
-        //uptime
-        /*
-        for folder in php5 php7; do
-		for subfolder in apache2 cli; do
-	    	if [ -f /etc/${folder}/${subfolder}/php.ini ]; then
-	    		echo "Update php file /etc/${folder}/${subfolder}/php.ini"
-				sed -i 's/max_execution_time = 30/max_execution_time = 300/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 1G/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/post_max_size = 8M/post_max_size = 1G/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/expose_php = On/expose_php = Off/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/;opcache.enable=0/opcache.enable=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/opcache.enable=0/opcache.enable=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/;opcache.enable_cli=0/opcache.enable_cli=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-			    sed -i 's/opcache.enable_cli=0/opcache.enable_cli=1/g' /etc/${folder}/${subfolder}/php.ini > /dev/null 2>&1
-	    	fi
-		done
-        done*/
-        /*
-        if [ -d /etc/mysql/conf.d ]; then
-    	touch /etc/mysql/conf.d/jeedom_my.cnf
-    	echo "[mysqld]" >> /etc/mysql/conf.d/jeedom_my.cnf
-    	echo "key_buffer_size = 16M" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "thread_cache_size = 16" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "tmp_table_size = 48M" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "max_heap_table_size = 48M" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "query_cache_type =1" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "query_cache_size = 16M" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "query_cache_limit = 2M" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "query_cache_min_res_unit=3K" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "innodb_flush_method = O_DIRECT" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "innodb_flush_log_at_trx_commit = 2" >> /etc/mysql/conf.d/jeedom_my.cnf
-		echo "innodb_log_file_size = 32M" >> /etc/mysql/conf.d/jeedom_my.cnf
-        fi*/
-        $this->checkJeemon();
+        $this->checkCmdOk('backup','Sauvegarde de moins de 24h','binary','daily','');
+        $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
+        $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
+        $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
+        $this->checkCmdOk('uptime','Durée depuis dernier reboot','numeric','15','mn');
+        $this->checkCmdOk('cpuload','Charge CPU sur 15mn','numeric','15','');
+        //log ERROR //$this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
+        //memory //$this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
+        $this->checkJeemon('all');
     }
 
-    public function checkCmdOk($_id, $_name, $_type) {
+    public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
         $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$_id);
         if (!is_object($jeemonCmd)) {
             log::add('jeemon', 'debug', 'Création de la commande ' . $_id);
@@ -80,12 +58,14 @@ class jeemon extends eqLogic {
             $jeemonCmd->setEqType('jeemon');
             $jeemonCmd->setLogicalId($_id);
             $jeemonCmd->setType('info');
-            $jeemonCmd->setSubType($_type);
             $jeemonCmd->setTemplate("mobile",'line' );
             $jeemonCmd->setTemplate("dashboard",'line' );
             $jeemonCmd->setDisplay("forceReturnLineAfter","1");
-            $jeemonCmd->save();
         }
+        $jeemonCmd->setSubType($_type);
+        $jeemonCmd->setUnite($_unite);
+        $jeemonCmd->setConfiguration('cron,'$_cron);
+        $jeemonCmd->save();
     }
 
     public function getExecCmd($id) {
@@ -139,13 +119,15 @@ class jeemon extends eqLogic {
         }
     }
 
-    public function checkJeemon() {
+    public function checkJeemon($cron) {
         foreach ($this->getCmd() as $cmd) {
-            $id = $cmd->getLogicalId();
-            $result = $this->getExecCmd($id);
-            $this->getExecAlert($id,$result);
-            log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $result);
-            $this->checkAndUpdateCmd($id, $result);
+            if ($cron == 'all' || $cron == $cmd->getConfiguration('cron')) {
+                $id = $cmd->getLogicalId();
+                $result = $this->getExecCmd($id);
+                $this->getExecAlert($id,$result);
+                log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $result);
+                $this->checkAndUpdateCmd($id, $result);
+            }
         }
     }
 }
