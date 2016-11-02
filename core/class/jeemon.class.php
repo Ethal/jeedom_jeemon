@@ -92,7 +92,7 @@ class jeemon extends eqLogic {
         switch ($id) {
             case 'backup':
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
-            $result = shell_exec('if `sudo find ' . $backup_path . ' -mtime -1 | read`; then echo "1"; else echo "0"; fi');
+            $result = shell_exec('if `find ' . $backup_path . ' -mtime -1 | read`; then echo "1"; else echo "0"; fi');
             break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
@@ -110,16 +110,10 @@ class jeemon extends eqLogic {
             $result = shell_exec("sudo df -h /tmp | tail -n 1 | awk '{print $1}'");
             break;
             case 'cpuload':
-            $uptime_string = shell_exec('uptime');
-            $pattern = '/load average: (.*), (.*), (.*)$/';
-    		preg_match($pattern, $uptime_string, $matches);
-            $result = $matches[3];
+            $result = shell_exec("uptime | awk  '{print $11}'");
             break;
             case 'uptime':
-            $uptime_string = shell_exec('uptime');
-            $pattern = '/up (.*?),/';
-    		preg_match($pattern, $uptime_string, $matches);
-            $result = $matches[1];
+            $result = shell_exec("awk  '{print $0/60;}' /proc/uptime");
             break;
 
         }
