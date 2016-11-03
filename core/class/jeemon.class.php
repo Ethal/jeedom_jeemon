@@ -72,7 +72,16 @@ class jeemon extends eqLogic {
         switch ($id) {
             case 'backup':
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
-            $result = shell_exec('if `find ' . $backup_path . ' -mtime -1 | read`; then echo "1"; else echo "0"; fi');
+            $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
+            break;
+            case 'logerr':
+            $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+            if (strpos($_SERVER['SERVER_SOFTWARE'],'Apache') !== false) {
+              $file_name = 'http.err';
+            } else {
+              $file_name = 'nginx-error.log'; //welldone !!!
+            }
+            $result = shell_exec('if [ $(find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
