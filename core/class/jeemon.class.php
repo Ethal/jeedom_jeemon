@@ -107,8 +107,8 @@ class jeemon extends eqLogic {
             $data = explode("\n", file_get_contents("/proc/meminfo"));
             $meminfo = array();
             foreach ($data as $line) {
-            	list($key, $val) = explode(":", $line);
-            	$meminfo[$key] = trim(str_replace("kB","",$val));
+            	$explode = explode(":", $line);
+            	$meminfo[$explode[0]] = trim(str_replace("kB","",$explode[1]));
             }
             $result = round($meminfo["Active"]/$meminfo["MemTotal"]*100,1);
             break;
