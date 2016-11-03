@@ -138,12 +138,12 @@ class jeemon extends eqLogic {
             break;
             case 'hdd_space':
             if ($result > 90) {
-                $this->alertCmd('Attention, l\'espace disque est occupé à ' . $ result . '%');
+                $this->alertCmd('Attention, l\'espace disque est occupé à ' . $result . '%');
             }
             break;
             case 'tmp_space':
             if ($result > 90) {
-                $this->alertCmd('Attention, l\'espace tmp est occupé à ' . $ result . '%');
+                $this->alertCmd('Attention, l\'espace tmp est occupé à ' . $result . '%');
             }
             break;
         }
