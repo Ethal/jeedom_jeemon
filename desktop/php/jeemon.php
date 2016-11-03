@@ -69,7 +69,7 @@ $eqLogics = eqLogic::byType('jeemon');
                 <form class="form-horizontal">
                     <fieldset>
                         <div class="form-group">
-                            <label class="col-sm-3 control-label">{{Jeedom}}</label>
+                            <label class="col-sm-3 control-label">{{Nom du Jeedom}}</label>
                             <div class="col-sm-3">
                                 <input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display : none;" />
                                 <input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement jeemon}}"/>
