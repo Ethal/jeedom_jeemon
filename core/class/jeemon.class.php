@@ -43,8 +43,8 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
         $this->checkCmdOk('uptime','Durée depuis dernier reboot','numeric','15','mn');
         $this->checkCmdOk('cpuload','Charge CPU sur 15mn','numeric','15','');
-        //log ERROR //$this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
-        //memory //$this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
+        $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
+        $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
         $this->checkJeemon('all');
     }
 
@@ -101,6 +101,11 @@ class jeemon extends eqLogic {
             case 'cpuload':
             $result = shell_exec("uptime | awk  '{print $11}'");
             break;
+            case 'memory':
+            $used = shell_exec("free -m | grep Mem | cut -f3 -d' '");
+            $total = shell_exec("free -m | grep Mem | cut -f2 -d' '");
+            $result = round($used/$total*100,1);
+            break;
             case 'uptime':
             $result = shell_exec("awk  '{print $0/60;}' /proc/uptime");
             break;
@@ -114,6 +119,16 @@ class jeemon extends eqLogic {
             case 'backup':
             if ($result == 0) {
                 $this->alertCmd('Pas de sauvegarde depuis 24h');
+            }
+            break;
+            case 'logerr':
+            if ($result == 0) {
+                $this->alertCmd('Attention, le log jeedom contient des erreurs');
+            }
+            break;
+            case 'tmp_type':
+            if ($result != 'tmpfs') {
+                $this->alertCmd('Attention, le répertoire tmp n\'est pas en mémoire');
             }
             break;
         }
