@@ -81,7 +81,7 @@ class jeemon extends eqLogic {
             } else {
               $file_name = 'nginx-error.log'; //welldone !!!
             }
-            $result = shell_exec('if [ $(find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
+            $result = shell_exec('if [ $(find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l) -gt 0 ]; then echo "0"; else echo "1"; fi');
             break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
@@ -127,8 +127,23 @@ class jeemon extends eqLogic {
             }
             break;
             case 'tmp_type':
-            if ($result != 'tmpfs') {
+            if (!preg_match('/tmpfs/',$result)) {
                 $this->alertCmd('Attention, le répertoire tmp n\'est pas en mémoire');
+            }
+            break;
+            case 'uptime':
+            if ($result < 15) {
+                $this->alertCmd('Attention, Jeedom a redémarrer il y a moins de 15mn');
+            }
+            break;
+            case 'hdd_space':
+            if ($result > 90) {
+                $this->alertCmd('Attention, l\'espace disque est occupé à ' . $ result . '%');
+            }
+            break;
+            case 'tmp_space':
+            if ($result > 90) {
+                $this->alertCmd('Attention, l\'espace tmp est occupé à ' . $ result . '%');
             }
             break;
         }
