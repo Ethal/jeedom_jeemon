@@ -102,9 +102,15 @@ class jeemon extends eqLogic {
             $result = shell_exec("uptime | awk  '{print $11}'");
             break;
             case 'memory':
-            $used = shell_exec("free -m | grep Mem | cut -f3 -d' '");
-            $total = shell_exec("free -m | grep Mem | cut -f2 -d' '");
-            $result = round($used/$total*100,1);
+            //$used = shell_exec("free -m | grep Mem | cut -f3 -d' '");
+            //$total = shell_exec("free -m | grep Mem | cut -f2 -d' '");
+            $data = explode("\n", file_get_contents("/proc/meminfo"));
+            $meminfo = array();
+            foreach ($data as $line) {
+            	list($key, $val) = explode(":", $line);
+            	$meminfo[$key] = trim(str_replace("kB","",$val));
+            }
+            $result = round($meminfo["Active"]/$meminfo["MemTotal"]*100,1);
             break;
             case 'uptime':
             $result = shell_exec("awk  '{print $0/60;}' /proc/uptime");
