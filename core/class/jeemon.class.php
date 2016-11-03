@@ -41,7 +41,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
-        $this->checkCmdOk('uptime','Durée depuis dernier reboot','numeric','15','mn');
+        $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','mn');
         $this->checkCmdOk('cpuload','Charge CPU sur 15mn','numeric','15','');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
@@ -107,7 +107,28 @@ class jeemon extends eqLogic {
             $result = round($used/$total*100,1);
             break;
             case 'uptime':
-            $result = shell_exec("awk  '{print $0/60;}' /proc/uptime");
+            $ut = strtok(@exec("cat /proc/uptime"), ".");
+            $days = sprintf("%2d", ($ut / (3600 * 24)));
+            $hours = sprintf("%2d", (($ut % (3600 * 24))) / 3600);
+            $min = sprintf("%2d", ($ut % (3600 * 24) % 3600) / 60);
+            $sec = sprintf("%2d", ($ut % (3600 * 24) % 3600) % 60);
+            $uptime = array($days, $hours, $min, $sec);
+            if ($uptime[0] == 0) {
+                if ($uptime[1] == 0) {
+                    if ($uptime[2] == 0) {
+                        $result = $uptime[3] . " seconde(s)";
+                    }
+                    else {
+                        $result = $uptime[2] . " minute(s)";
+                    }
+                }
+                else {
+                    $result = $uptime[1] . " heure(s)";
+                }
+            }
+            else {
+                $result = $uptime[0] . " jour(s)";
+            }
             break;
 
         }
@@ -132,7 +153,8 @@ class jeemon extends eqLogic {
             }
             break;
             case 'uptime':
-            if ($result < 15) {
+            $result = explode($result,' ');
+            if ($result[0] < 15 && $result[0] == "minute(s)") {
                 $this->alertCmd('Attention, Jeedom a redémarrer il y a moins de 15mn');
             }
             break;
