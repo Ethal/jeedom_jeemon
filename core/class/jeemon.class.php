@@ -37,7 +37,8 @@ class jeemon extends eqLogic {
     }
 
     public function postUpdate() {
-        $this->checkCmdOk('backup','Sauvegarde de moins de 24h','binary','daily','');
+        $this->checkCmdOk('backup','Sauvegarde locale de moins de 24h','binary','daily','');
+        $this->checkCmdOk('backup','Sauvegarde cloud de moins de 24h','binary','daily','');
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
@@ -74,9 +75,16 @@ class jeemon extends eqLogic {
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
             $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
+            case 'cloudbackup':
+            $backup = market::listeBackup();
+            if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false) {
+                $result = 1;
+            } else {
+                $result = 0;
+            }
+            break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            $back = market::listeBackup();
             log::add('jeemon', 'debug', 'Market ' . print_r($back, true));
             if (shell_exec("dpkg -l | grep nginx") != '') {
               $file_name = 'nginx-error.log'; //welldone !!!
