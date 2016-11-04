@@ -41,8 +41,8 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
-        $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','mn');
-        $this->checkCmdOk('cpuload','Charge CPU sur 15mn','numeric','15','');
+        $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','');
+        $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
         $this->checkJeemon('all');
@@ -76,10 +76,10 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            if (strpos($_SERVER['SERVER_SOFTWARE'],'Apache') !== false) {
-              $file_name = 'http.err';
-            } else {
+            if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'],'Nginx') !== false) {
               $file_name = 'nginx-error.log'; //welldone !!!
+            } else {
+              $file_name = 'http.error';
             }
             $result = shell_exec('if [ $(find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l) -gt 0 ]; then echo "0"; else echo "1"; fi');
             break;
@@ -100,6 +100,8 @@ class jeemon extends eqLogic {
             break;
             case 'cpuload':
             $result = shell_exec("uptime | awk  '{print $11}'");
+            $core = shell_exec("nproc --all");
+            $result = $result / $core * 100;
             break;
             case 'memory':
             $used = shell_exec("cat /proc/meminfo | grep 'Active(anon)' | awk '{print $2}'");
@@ -116,14 +118,14 @@ class jeemon extends eqLogic {
             if ($uptime[0] == 0) {
                 if ($uptime[1] == 0) {
                     if ($uptime[2] == 0) {
-                        $result = $uptime[3] . " seconde(s)";
+                        $result = $uptime[3] . " s";
                     }
                     else {
-                        $result = $uptime[2] . " minute(s)";
+                        $result = $uptime[2] . " mn";
                     }
                 }
                 else {
-                    $result = $uptime[1] . " heure(s)";
+                    $result = $uptime[1] . " h";
                 }
             }
             else {
@@ -147,11 +149,11 @@ class jeemon extends eqLogic {
                 $this->alertCmd('Attention, le log jeedom contient des erreurs');
             }
             break;
-            case 'tmp_type':
+            /*case 'tmp_type':
             if (!preg_match('/tmpfs/',$result)) {
                 $this->alertCmd('Attention, le répertoire tmp n\'est pas en mémoire');
             }
-            break;
+            break;*/
             case 'uptime':
             $result = explode($result,' ');
             if ($result[0] < 15 && $result[0] == "minute(s)") {
