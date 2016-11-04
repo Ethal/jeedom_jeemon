@@ -76,6 +76,7 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+            log::add('jeemon', 'debug', 'Software ' . $_SERVER['SERVER_SOFTWARE']);
             if (isset($_SERVER['SERVER_SOFTWARE']) && strpos($_SERVER['SERVER_SOFTWARE'],'Nginx') !== false) {
               $file_name = 'nginx-error.log'; //welldone !!!
             } else {
@@ -191,6 +192,13 @@ class jeemon extends eqLogic {
                 log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $result);
                 $this->checkAndUpdateCmd($id, $result);
             }
+        }
+    }
+
+    public function resetAlert() {
+        foreach ($this->getCmd() as $cmd) {
+            $cmd->setConfiguration('alert','0');
+            $cmd->save();
         }
     }
 }
