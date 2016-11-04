@@ -82,7 +82,7 @@ class jeemon extends eqLogic {
             } else {
                 $result = 0;
             }
-            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24)));
+            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24));
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
