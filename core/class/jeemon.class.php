@@ -76,11 +76,9 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            log::add('jeemon', 'debug', 'Phpinfo ' . phpinfo(INFO_GENERAL));
-            log::add('jeemon', 'debug', 'Server ' . $_SERVER['SERVER_SOFTWARE']);
             $back = market::listeBackup();
-            log::add('jeemon', 'debug', 'Market ' . print_r($back));
-            if (strpos($_SERVER['SERVER_SOFTWARE'],'nginx') !== false) {
+            log::add('jeemon', 'debug', 'Market ' . print_r($back, true));
+            if (shell_exec("dpkg -l | grep nginx") != '') {
               $file_name = 'nginx-error.log'; //welldone !!!
             } else {
               $file_name = 'http.error';
