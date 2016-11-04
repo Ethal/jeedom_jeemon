@@ -77,12 +77,11 @@ class jeemon extends eqLogic {
             break;
             case 'cloudbackup':
             $backup = market::listeBackup();
-            if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false) {
+            if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
                 $result = 1;
             } else {
                 $result = 0;
             }
-            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24));
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
