@@ -151,7 +151,12 @@ class jeemon extends eqLogic {
         switch ($id) {
             case 'backup':
             if ($result == 0) {
-                $this->alertCmd('Pas de sauvegarde depuis 24h');
+                $this->alertCmd('Pas de sauvegarde locale depuis 24h');
+            }
+            break;
+            case 'cloudbackup':
+            if ($result == 0) {
+                $this->alertCmd('Pas de sauvegarde cloud depuis 24h');
             }
             break;
             case 'logerr':
