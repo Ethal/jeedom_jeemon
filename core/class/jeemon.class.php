@@ -85,7 +85,6 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            log::add('jeemon', 'debug', 'Market ' . print_r($back, true));
             if (shell_exec("dpkg -l | grep nginx") != '') {
               $file_name = 'nginx-error.log'; //welldone !!!
             } else {
