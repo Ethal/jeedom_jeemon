@@ -38,7 +38,7 @@ class jeemon extends eqLogic {
 
     public function postUpdate() {
         $this->checkCmdOk('backup','Sauvegarde locale de moins de 24h','binary','daily','');
-        $this->checkCmdOk('backup','Sauvegarde cloud de moins de 24h','binary','daily','');
+        $this->checkCmdOk('cloudbackup','Sauvegarde cloud de moins de 24h','binary','daily','');
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
@@ -82,6 +82,7 @@ class jeemon extends eqLogic {
             } else {
                 $result = 0;
             }
+            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24)));
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
