@@ -1,0 +1,40 @@
+{
+    "plugins\/jeemon\/desktop\/php\/jeemon.php": {
+        "Ajouter un équipement": "Ajouter un équipement",
+        "Rechercher": "Rechercher",
+        "Mes Jeedom": "Mes Jeedom",
+        "Sauvegarder": "Sauvegarder",
+        "Supprimer": "Supprimer",
+        "Configuration avancée": "Configuration avancée",
+        "Equipement": "Equipement",
+        "Commandes": "Commandes",
+        "Nom du Jeedom": "Nom du Jeedom",
+        "Nom de l'équipement jeemon": "Nom de l'équipement jeemon",
+        "Objet parent": "Objet parent",
+        "Aucun": "Aucun",
+        "Catégorie": "Catégorie",
+        "Activer": "Activer",
+        "Visible": "Visible",
+        "Commentaire": "Commentaire",
+        "Commande Alerte": "Commande Alerte",
+        "Commande Rapport": "Commande Rapport",
+        "Nom": "Nom",
+        "Options": "Options"
+    },
+    "plugins\/jeemon\/desktop\/js\/jeemon.js": {
+        "Afficher": "Afficher",
+        "Historiser": "Historiser",
+        "Tester": "Tester"
+    },
+    "plugins\/jeemon\/core\/class\/jeemon.class.php": {
+        "Sauvegarde locale de moins de 24h": "Sauvegarde locale de moins de 24h",
+        "Sauvegarde cloud de moins de 24h": "Sauvegarde cloud de moins de 24h",
+        "Espace disque \/ utilisé": "Espace disque \/ utilisé",
+        "Espace disque \/tmp utilisé": "Espace disque \/tmp utilisé",
+        "Type de montage \/tmp": "Type de montage \/tmp",
+        "Durée depuis dernier reboot": "Durée depuis dernier reboot",
+        "Charge moyenne CPU sur 15mn": "Charge moyenne CPU sur 15mn",
+        "Activité sur le log erreurs": "Activité sur le log erreurs",
+        "Charge mémoire": "Charge mémoire"
+    }
+}
