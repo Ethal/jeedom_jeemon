@@ -18,10 +18,22 @@
 
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 
-function jeemon_update() {
-  foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-      $jeemon->save();
+function jeemon_install() {
+  foreach (eqLogic::byType('jeemon') as $jeemon) {
+      if ($jeemon->getLogicalId() != 'jeemon') {
+          $jeemon->remove();
+      }
   }
+  jeemon::checkInstall();
+}
+
+function jeemon_update() {
+    foreach (eqLogic::byType('jeemon') as $jeemon) {
+        if ($jeemon->getLogicalId() != 'jeemon') {
+            $jeemon->remove();
+        }
+    }
+    jeemon::checkInstall();
 }
 
 ?>

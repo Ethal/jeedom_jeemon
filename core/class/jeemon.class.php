@@ -49,6 +49,18 @@ class jeemon extends eqLogic {
         $this->checkJeemon('all');
     }
 
+    public function checkInstall() {
+        $eqLogic = jeemon::byLogicalId('jeemon','jeemon');
+        if (!is_object($eqLogic)) {
+            $jeemon = new jeemon();
+            $jeemon->setEqType_name('jeemon');
+            $jeemon->setLogicalId('jeemon');
+            $jeemon->setName('Jeemon');
+            $jeemon->setIsEnable(true);
+            $jeemon->save();
+        }
+    }
+
     public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
         $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$_id);
         if (!is_object($jeemonCmd)) {

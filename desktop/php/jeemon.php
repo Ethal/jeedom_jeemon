@@ -13,12 +13,6 @@ $eqLogics = eqLogic::byType('jeemon');
         <legend><i class="fa fa-table"></i>  {{Mes Jeedom}}
         </legend>
         <div class="eqLogicThumbnailContainer">
-            <div class="cursor eqLogicAction" data-action="add" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
-                <center>
-                    <i class="fa fa-plus-circle" style="font-size : 7em;color:#00979c;"></i>
-                </center>
-                <span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>Ajouter</center></span>
-            </div>
             <?php
             $dir = dirname(__FILE__) . '/../../doc/images/';
             $files = scandir($dir);
