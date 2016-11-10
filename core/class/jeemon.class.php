@@ -56,7 +56,6 @@ class jeemon extends eqLogic {
             $jeemon->setEqType_name('jeemon');
             $jeemon->setLogicalId('jeemon');
             $jeemon->setName('Jeemon');
-            $jeemon->setIsEnable(true);
             $jeemon->save();
         }
     }
@@ -163,61 +162,80 @@ class jeemon extends eqLogic {
         switch ($id) {
             case 'backup':
             if ($result == 0) {
-                $this->alertCmd('Pas de sauvegarde locale depuis 24h');
+                $return = 'Pas de sauvegarde locale depuis 24h';
             }
             break;
             case 'cloudbackup':
             if ($result == 0) {
-                $this->alertCmd('Pas de sauvegarde cloud depuis 24h');
+                $return = 'Pas de sauvegarde cloud depuis 24h';
             }
             break;
             case 'logerr':
             if ($result == 0) {
-                $this->alertCmd('Attention, le log jeedom contient des erreurs');
+                $return = 'Attention, le log jeedom contient des erreurs';
             }
             break;
-            /*case 'tmp_type':
+            case 'tmp_type':
             if (!preg_match('/tmpfs/',$result)) {
-                $this->alertCmd('Attention, le répertoire tmp n\'est pas en mémoire');
+                $return = 'Attention, le répertoire tmp n\'est pas en mémoire';
             }
-            break;*/
+            break;
             case 'uptime':
             $result = explode($result,' ');
             if ($result[0] < 15 && $result[0] == "minute(s)") {
-                $this->alertCmd('Attention, Jeedom a redémarrer il y a moins de 15mn');
+                $return = 'Attention, Jeedom a redémarrer il y a moins de 15mn';
             }
             break;
             case 'hdd_space':
             if ($result > 90) {
-                $this->alertCmd('Attention, l\'espace disque est occupé à ' . $result . '%');
+                $return = 'Attention, l\'espace disque est occupé à ' . $result . '%';
             }
             break;
             case 'tmp_space':
             if ($result > 90) {
-                $this->alertCmd('Attention, l\'espace tmp est occupé à ' . $result . '%');
+                $return = 'Attention, l\'espace tmp est occupé à ' . $result . '%';
             }
             break;
         }
+        return $return;
     }
 
-    public function alertCmd($alert) {
-        if ($this->getConfiguration('alert') != "") {
+    public function alertCmd($alert,$type) {
+        if ($type == 'alert' && $this->getConfiguration('alert') != "") {
             $cmdalerte = cmd::byId(str_replace('#','',$this->getConfiguration('alert')));
             $options['title'] = "Alerte Jeedom";
+            $options['message'] = $alert;
+            $cmdalerte->execCmd($options);
+        }
+        if ($type == 'report' && $this->getConfiguration('report') != "") {
+            $cmdalerte = cmd::byId(str_replace('#','',$this->getConfiguration('alert')));
+            $options['title'] = "Rapport Jeedom";
             $options['message'] = $alert;
             $cmdalerte->execCmd($options);
         }
     }
 
     public function checkJeemon($cron) {
+        $alert = '';
+        $report = '';
         foreach ($this->getCmd() as $cmd) {
             if ($cron == 'all' || $cron == $cmd->getConfiguration('cron')) {
                 $id = $cmd->getLogicalId();
                 $result = $this->getExecCmd($id);
-                $this->getExecAlert($id,$result);
-                log::add('jeemon', 'info', 'Commande ' . $id . ' : ' . $result);
+                if ($cmd->getConfiguration('alert') == 'alert') {
+                    $alert .= $this->getExecAlert($id,$result) . EOL;
+                } else if ($cmd->getConfiguration('alert') == 'alert') {
+                    $report .= $this->getExecAlert($id,$result) . EOL;
+                }
+                log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
                 $this->checkAndUpdateCmd($id, $result);
             }
+        }
+        if ($alert != '') {
+            $this->alertCmd('alert',$alert);
+        }
+        if ($report != '') {
+            $this->alertCmd('alert',$report);
         }
     }
 

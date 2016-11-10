@@ -39,9 +39,9 @@ function addCmdToTable(_cmd) {
     tr += '<span class="cmdAttr" data-l1key="name"></span>';
     tr += '</td><td>';
     tr += '<select class="cmdAttr" data-l1key="configuration" data-l2key="alert" style="height : 33px; width : 60%;display : inline-block;">';
-    tr += '<option value="none">Aucune</option>';
-    tr += '<option value="report">Rapport</option>';
     tr += '<option value="alert">Alerte</option>';
+    tr += '<option value="report">Rapport</option>';
+    tr += '<option value="none">Aucune</option>';
     tr +='</select>';
     tr += '</td><td>';
     tr += '<span><label class="checkbox-inline"><input type="checkbox" class="cmdAttr checkbox-inline" data-l1key="isVisible" checked/>{{Afficher}}</label></span> ';
