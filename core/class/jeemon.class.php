@@ -58,6 +58,12 @@ class jeemon extends eqLogic {
             $jeemon->setName('Jeemon');
             $jeemon->save();
         }
+        if (strpos($_SERVER['SERVER_SOFTWARE'],'Nginx') !== false) {
+             $server = 'nginx-error.log';//welldone !!!
+           } else {
+             $server = 'http.error';
+           }
+           config::save('logerr', $server,  'jeemon');
     }
 
     public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
@@ -97,11 +103,7 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            if (shell_exec("dpkg -l | grep nginx") != '') {
-              $file_name = 'nginx-error.log'; //welldone !!!
-            } else {
-              $file_name = 'http.error';
-            }
+            $file_name = config::byKey('logerr', 'jeemon','http.error');
             $result = shell_exec('if [ $(find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l) -gt 0 ]; then echo "0"; else echo "1"; fi');
             break;
             case 'hdd_space':
