@@ -31,7 +31,7 @@ $(document).ready(function() {
       alert(window.location.search);
       str = window.location.search;
       if (str.search('id') == -1) {
-          alert("in");
+          $('#jeemon').trigger("click")
       }
 });
 
