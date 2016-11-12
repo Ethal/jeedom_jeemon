@@ -11,15 +11,23 @@ $eqLogics = eqLogic::byType('jeemon');
 <div class="row row-overflow">
     <div class="col-lg-10 col-md-9 col-sm-8 eqLogicThumbnailDisplay" style="border-left: solid 1px #EEE; padding-left: 25px;">
         <div class="eqLogicThumbnailContainer">
-            <?php
-            $eqLogic = jeemon::byLogicalId('jeemon','jeemon');
-            echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff ; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >';
-            ?>
+          <div class="cursor eqLogicAction" data-action="add" style="background-color : #ffffff; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;" >
             <center>
-            <img src="plugins/jeemon/doc/images/jeemon_icon.png" height="105" width="95" />
+              <i class="fa fa-plus-circle" style="font-size : 7em;color:#00979c;"></i>
             </center>
-            <span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>Jeemon</center></span>
-            </div>
+            <span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>Ajouter</center></span>
+          </div>
+          <?php
+          foreach ($eqLogics as $eqLogic) {
+            $opacity = ($eqLogic->getIsEnable()) ? '' : jeedom::getConfiguration('eqLogic:style:noactive');
+            echo '<div class="eqLogicDisplayCard cursor" data-eqLogic_id="' . $eqLogic->getId() . '" style="background-color : #ffffff ; height : 200px;margin-bottom : 10px;padding : 5px;border-radius: 2px;width : 160px;margin-left : 10px;' . $opacity . '" >';
+            echo "<center>";
+            echo '<img src="plugins/jeemon/doc/images/jeemon_icon.png" height="105" width="95" />';
+            echo "</center>";
+            echo '<span style="font-size : 1.1em;position:relative; top : 15px;word-break: break-all;white-space: pre-wrap;word-wrap: break-word;"><center>' . $eqLogic->getHumanName(true, true) . '</center></span>';
+            echo '</div>';
+          }
+          ?>
         </div>
     </div>
 

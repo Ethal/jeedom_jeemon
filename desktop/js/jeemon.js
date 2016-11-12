@@ -27,6 +27,19 @@ $('#bt_selectReportCmd').on('click', function () {
     });
 });
 
+$('body').on('jeemon::includeDevice', function (_event,_options) {
+    if (modifyWithoutSave) {
+        $('#div_inclusionAlert').showAlert({message: '{{Un périphérique vient d\'être inclu/exclu. Veuillez réactualiser la page}}', level: 'warning'});
+    } else {
+        if (_options == '') {
+            window.location.reload();
+        } else {
+            window.location.href = 'index.php?v=d&p=jeemon&m=jeemon&id=' + _options;
+        }
+    }
+});
+
+
 function addCmdToTable(_cmd) {
     if (!isset(_cmd)) {
         var _cmd = {configuration: {}};
