@@ -87,7 +87,7 @@ class jeemon extends eqLogic {
             $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
             case 'cloudbackup':
-            $backup = market::listeBackup();
+            $backup = repo_market::listeBackup();
             if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
                 $result = 1;
             } else {
