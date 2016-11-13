@@ -161,6 +161,7 @@ class jeemon extends eqLogic {
     }
 
     public function getExecAlert($id,$result) {
+        $return = '';
         switch ($id) {
             case 'backup':
             if ($result == 0) {
@@ -225,9 +226,9 @@ class jeemon extends eqLogic {
                 $id = $cmd->getLogicalId();
                 $result = $this->getExecCmd($id);
                 if ($cmd->getConfiguration('alert') == 'alert') {
-                    $alert .= $this->getExecAlert($id,$result) . EOL;
-                } else if ($cmd->getConfiguration('alert') == 'alert') {
-                    $report .= $this->getExecAlert($id,$result) . EOL;
+                    $alert .= $this->getExecAlert($id,$result) . PHP_EOL;
+                } else if ($cmd->getConfiguration('alert') == 'report') {
+                    $report .= $this->getExecAlert($id,$result) . PHP_EOL;
                 }
                 log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
                 $this->checkAndUpdateCmd($id, $result);
