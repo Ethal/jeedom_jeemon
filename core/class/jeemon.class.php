@@ -242,7 +242,7 @@ class jeemon extends eqLogic {
             $cmdalerte->execCmd($options);
         }
         if ($type == 'report' && $this->getConfiguration('report') != "") {
-            $cmdalerte = cmd::byId(str_replace('#','',$this->getConfiguration('alert')));
+            $cmdalerte = cmd::byId(str_replace('#','',$this->getConfiguration('report')));
             $options['title'] = "Rapport Jeedom";
             $options['message'] = $alert;
             $cmdalerte->execCmd($options);
@@ -257,7 +257,7 @@ class jeemon extends eqLogic {
                 $result = $this->getExecCmd($id);
                 $message = $this->getExecAlert($id,$result);
                 $report .= $cmd->getLogicalId() . ' : ' . $result . ', ' . $message . PHP_EOL;
-                log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
+                log::add('jeemon', 'debug', 'Rapport ' . $cmd->getLogicalId() . ' : ' . $result . ', ' . $message);
                 $this->checkAndUpdateCmd($id, $result);
             }
         }
