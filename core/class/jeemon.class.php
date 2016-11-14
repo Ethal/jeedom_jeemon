@@ -257,11 +257,12 @@ class jeemon extends eqLogic {
                 if ($cron == 'all' || $cron == $cmd->getConfiguration('cron')) {
                     $id = $cmd->getLogicalId();
                     $result = $this->getExecCmd($id);
-                    if ($cmd->getConfiguration('alert') == 'alert') {
-                        $alert .= $this->getExecAlert($id,$result) . PHP_EOL;
+                    $message = $this->getExecAlert($id,$result);
+                    if ($cmd->getConfiguration('alert') == 'alert' && $message != '') {
+                        $alert .= $message . PHP_EOL;
                     }
-                    if ($cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') {
-                        $report .= $this->getExecAlert($id,$result) . PHP_EOL;
+                    if (()$cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') && $message != '') {
+                        $report .= $message . PHP_EOL;
                     }
                     log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
                     $this->checkAndUpdateCmd($id, $result);
