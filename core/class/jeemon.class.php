@@ -20,23 +20,27 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class jeemon extends eqLogic {
     public function cronHourly() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon('hourly');
+            $jeemon->checkJeemon('hourly','alert');
         }
     }
 
     public function cron15() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon('15');
+            $jeemon->checkJeemon('15','alert');
         }
     }
 
     public function cronDaily() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon('daily');
+            $jeemon->checkJeemon('daily','alert');
         }
     }
 
     public function postUpdate() {
+        $this->checkCmds();
+    }
+
+    public function checkCmds() {
         $this->checkCmdOk('backup','Sauvegarde locale de moins de 24h','binary','daily','');
         $this->checkCmdOk('cloudbackup','Sauvegarde cloud de moins de 24h','binary','daily','');
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
@@ -46,8 +50,33 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
-        $this->checkJeemon('all');
+        $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'refresh');
+        if (!is_object($jeemonCmd)) {
+            log::add('jeemon', 'debug', 'Création de la commande refresh');
+            $jeemonCmd = new jeemonCmd();
+            $jeemonCmd->setName(__('Rafraichir', __FILE__));
+            $jeemonCmd->setEqLogic_id($this->id);
+            $jeemonCmd->setEqType('jeemon');
+            $jeemonCmd->setLogicalId('refresh');
+            $jeemonCmd->setType('action');
+        }
+        $jeemonCmd->setSubType('other');
+        $jeemonCmd->save();
+        $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'rapport');
+        if (!is_object($jeemonCmd)) {
+            log::add('jeemon', 'debug', 'Création de la commande rapport');
+            $jeemonCmd = new jeemonCmd();
+            $jeemonCmd->setName(__('Rapport', __FILE__));
+            $jeemonCmd->setEqLogic_id($this->id);
+            $jeemonCmd->setEqType('jeemon');
+            $jeemonCmd->setLogicalId('rapport');
+            $jeemonCmd->setType('action');
+        }
+        $jeemonCmd->setSubType('other');
+        $jeemonCmd->save();
+        $this->checkJeemon('all','alert');
     }
+
 
     public function checkInstall() {
         $eqLogic = jeemon::byLogicalId('jeemon','jeemon');
@@ -60,10 +89,11 @@ class jeemon extends eqLogic {
         }
         if (strpos($_SERVER['SERVER_SOFTWARE'],'Nginx') !== false) {
              $server = 'nginx-error.log';//welldone !!!
-           } else {
+         } else {
              $server = 'http.error';
-           }
-           config::save('logerr', $server,  'jeemon');
+         }
+       config::save('logerr', $server,  'jeemon');
+       $this->checkCmds();
     }
 
     public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
@@ -218,7 +248,7 @@ class jeemon extends eqLogic {
         }
     }
 
-    public function checkJeemon($cron) {
+    public function checkJeemon($cron,$level) {
         $alert = '';
         $report = '';
         foreach ($this->getCmd() as $cmd) {
@@ -227,17 +257,18 @@ class jeemon extends eqLogic {
                 $result = $this->getExecCmd($id);
                 if ($cmd->getConfiguration('alert') == 'alert') {
                     $alert .= $this->getExecAlert($id,$result) . PHP_EOL;
-                } else if ($cmd->getConfiguration('alert') == 'report') {
+                }
+                if ($cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') {
                     $report .= $this->getExecAlert($id,$result) . PHP_EOL;
                 }
                 log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
                 $this->checkAndUpdateCmd($id, $result);
             }
         }
-        if ($alert != '') {
+        if ($alert != '' && $level == 'alert') {
             $this->alertCmd('alert',$alert);
         }
-        if ($report != '') {
+        if ($report != '' && $level == 'report') {
             $this->alertCmd('report',$report);
         }
     }
@@ -251,4 +282,17 @@ class jeemon extends eqLogic {
 }
 
 class jeemonCmd extends cmd {
+    public function execute($_options = null) {
+		if ($this->getType() == 'info') {
+			return $this->getConfiguration('value');
+		} else {
+			$eqLogic = $this->getEqLogic();
+            if ($this->getLogicalId() == 'report') {
+                $level = 'report';
+            } else {
+                $level = 'alert';
+            }
+			$eqLogic->checkJeemon('all',$level);
+		}
+	}
 }
