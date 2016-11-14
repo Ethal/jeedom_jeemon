@@ -201,9 +201,9 @@ class jeemon extends eqLogic {
                 $return = 'Pas de sauvegarde locale depuis 24h';
             }
             break;
-            case 'cloudbackup':
+            case 'remotebackup':
             if ($result == 0) {
-                $return = 'Pas de sauvegarde cloud depuis 24h';
+                $return = 'Pas de sauvegarde distante depuis 24h';
             }
             break;
             case 'logerr':
