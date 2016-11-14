@@ -299,7 +299,7 @@ class jeemonCmd extends cmd {
 			return $this->getConfiguration('value');
 		} else {
 			$eqLogic = $this->getEqLogic();
-            if ($this->getLogicalId() == 'report') {
+            if ($this->getLogicalId() == 'rapport') {
                 $eqLogic->reportJeemon();
             } else {
                 $eqLogic->checkJeemon('all');
