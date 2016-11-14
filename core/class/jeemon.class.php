@@ -117,6 +117,7 @@ class jeemon extends eqLogic {
     }
 
     public function getExecCmd($id) {
+        $result = '';
         switch ($id) {
             case 'backup':
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
@@ -252,17 +253,19 @@ class jeemon extends eqLogic {
         $alert = '';
         $report = '';
         foreach ($this->getCmd() as $cmd) {
-            if ($cron == 'all' || $cron == $cmd->getConfiguration('cron')) {
-                $id = $cmd->getLogicalId();
-                $result = $this->getExecCmd($id);
-                if ($cmd->getConfiguration('alert') == 'alert') {
-                    $alert .= $this->getExecAlert($id,$result) . PHP_EOL;
+            if ($cmd->getType() == 'info') {
+                if ($cron == 'all' || $cron == $cmd->getConfiguration('cron')) {
+                    $id = $cmd->getLogicalId();
+                    $result = $this->getExecCmd($id);
+                    if ($cmd->getConfiguration('alert') == 'alert') {
+                        $alert .= $this->getExecAlert($id,$result) . PHP_EOL;
+                    }
+                    if ($cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') {
+                        $report .= $this->getExecAlert($id,$result) . PHP_EOL;
+                    }
+                    log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
+                    $this->checkAndUpdateCmd($id, $result);
                 }
-                if ($cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') {
-                    $report .= $this->getExecAlert($id,$result) . PHP_EOL;
-                }
-                log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
-                $this->checkAndUpdateCmd($id, $result);
             }
         }
         if ($alert != '' && $level == 'alert') {
