@@ -42,7 +42,7 @@ class jeemon extends eqLogic {
 
     public function checkCmds() {
         $this->checkCmdOk('backup','Sauvegarde locale de moins de 24h','binary','daily','');
-        $this->checkCmdOk('cloudbackup','Sauvegarde cloud de moins de 24h','binary','daily','');
+        $this->checkCmdOk('remotebackup','Sauvegarde distante de moins de 24h','binary','daily','');
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_type','Type de montage /tmp','string','daily','');
@@ -123,14 +123,16 @@ class jeemon extends eqLogic {
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
             $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
-            case 'cloudbackup':
-            $backup = repo_market::listeBackup();
-            if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
+            case 'remotebackup':
+            $backup_market = repo_market::listeBackup();
+            $backup_samba = repo_samba::listeBackup();
+            if (strpos($backup_market[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup_market[0], date('Y-m-d')) !== false || strpos($backup_samba[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup_samba[0], date('Y-m-d')) !== false) {
                 $result = 1;
             } else {
                 $result = 0;
             }
-            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
+            log::add('jeemon', 'debug', 'Cloud ' . $backup_market[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
+            log::add('jeemon', 'debug', 'Samba ' . $backup_samba[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
             break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
