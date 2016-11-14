@@ -249,7 +249,7 @@ class jeemon extends eqLogic {
         }
     }
 
-    public function reportJeemon($cron) {
+    public function reportJeemon() {
         $report = '';
         foreach ($this->getCmd() as $cmd) {
             if ($cmd->getType() == 'info') {
