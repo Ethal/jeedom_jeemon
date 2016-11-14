@@ -203,7 +203,7 @@ class jeemon extends eqLogic {
         return $return;
     }
 
-    public function alertCmd($alert,$type) {
+    public function alertCmd($type,$alert) {
         if ($type == 'alert' && $this->getConfiguration('alert') != "") {
             $cmdalerte = cmd::byId(str_replace('#','',$this->getConfiguration('alert')));
             $options['title'] = "Alerte Jeedom";
@@ -238,7 +238,7 @@ class jeemon extends eqLogic {
             $this->alertCmd('alert',$alert);
         }
         if ($report != '') {
-            $this->alertCmd('alert',$report);
+            $this->alertCmd('report',$report);
         }
     }
 
