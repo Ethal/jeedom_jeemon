@@ -46,7 +46,7 @@ function addCmdToTable(_cmd) {
     tr += '</td><td>';
     tr += '<span class="cmdAttr" data-l1key="name"></span>';
     tr += '</td><td>';
-    if (_cmd.typecmd == 'info') {
+    if (_cmd.type == 'info') {
         tr += '<select class="cmdAttr" data-l1key="configuration" data-l2key="alert" style="height : 33px; width : 60%;display : inline-block;">';
         tr += '<option value="alert">Alerte</option>';
         tr += '<option value="report">Rapport</option>';
