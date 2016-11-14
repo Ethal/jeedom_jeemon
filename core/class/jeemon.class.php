@@ -261,7 +261,7 @@ class jeemon extends eqLogic {
                     if ($cmd->getConfiguration('alert') == 'alert' && $message != '') {
                         $alert .= $message . PHP_EOL;
                     }
-                    if (()$cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') && $message != '') {
+                    if (($cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert') && $message != '') {
                         $report .= $message . PHP_EOL;
                     }
                     log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
