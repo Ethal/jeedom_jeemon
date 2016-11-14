@@ -20,19 +20,19 @@ require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 class jeemon extends eqLogic {
     public function cronHourly() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon('hourly','alert');
+            $jeemon->checkJeemon('hourly');
         }
     }
 
     public function cron15() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon('15','alert');
+            $jeemon->checkJeemon('15');
         }
     }
 
     public function cronDaily() {
         foreach (eqLogic::byType('jeemon', true) as $jeemon) {
-            $jeemon->checkJeemon('daily','alert');
+            $jeemon->checkJeemon('daily');
         }
     }
 
@@ -74,7 +74,7 @@ class jeemon extends eqLogic {
         }
         $jeemonCmd->setSubType('other');
         $jeemonCmd->save();
-        $this->checkJeemon('all','alert');
+        $this->checkJeemon('all');
     }
 
 
@@ -249,9 +249,23 @@ class jeemon extends eqLogic {
         }
     }
 
-    public function checkJeemon($cron,$level) {
-        $alert = '';
+    public function reportJeemon($cron) {
         $report = '';
+        foreach ($this->getCmd() as $cmd) {
+            if ($cmd->getType() == 'info') {
+                $id = $cmd->getLogicalId();
+                $result = $this->getExecCmd($id);
+                $message = $this->getExecAlert($id,$result);
+                $report .= $cmd->getLogicalId() . ' : ' . $result . ', ' . $message . PHP_EOL;
+                log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
+                $this->checkAndUpdateCmd($id, $result);
+            }
+        }
+        $this->alertCmd('report',$report);
+    }
+
+    public function checkJeemon($cron) {
+        $alert = '';
         foreach ($this->getCmd() as $cmd) {
             if ($cmd->getType() == 'info') {
                 if ($cron == 'all' || $cron == $cmd->getConfiguration('cron')) {
@@ -261,19 +275,13 @@ class jeemon extends eqLogic {
                     if ($cmd->getConfiguration('alert') == 'alert' && $message != '') {
                         $alert .= $message . PHP_EOL;
                     }
-                    if (($cmd->getConfiguration('alert') == 'report' || $cmd->getConfiguration('alert') == 'alert')) {
-                        $report .= $cmd->getLogicalId() . ' : ' . $result . ', ' . $message . PHP_EOL;
-                    }
                     log::add('jeemon', 'debug', 'Commande ' . $id . ' : ' . $result);
                     $this->checkAndUpdateCmd($id, $result);
                 }
             }
         }
-        if ($alert != '' && $level == 'alert') {
+        if ($alert != '') {
             $this->alertCmd('alert',$alert);
-        }
-        if ($report != '' && $level == 'report') {
-            $this->alertCmd('report',$report);
         }
     }
 
@@ -292,11 +300,11 @@ class jeemonCmd extends cmd {
 		} else {
 			$eqLogic = $this->getEqLogic();
             if ($this->getLogicalId() == 'report') {
-                $level = 'report';
+                $eqLogic->reportJeemon();
             } else {
-                $level = 'alert';
+                $eqLogic->checkJeemon('all');
             }
-			$eqLogic->checkJeemon('all',$level);
+
 		}
 	}
 }
