@@ -23,7 +23,7 @@ $('#bt_selectAlertCmd').on('click', function () {
 
 $('#bt_selectReportCmd').on('click', function () {
     jeedom.cmd.getSelectModal({cmd: {type: 'action', subType: 'message'}}, function (result) {
-        $('.eqLogicAttr[data-l2key=alert]').atCaret('insert', result.human);
+        $('.eqLogicAttr[data-l2key=report]').atCaret('insert', result.human);
     });
 });
 
