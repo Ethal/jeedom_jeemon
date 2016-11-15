@@ -276,7 +276,7 @@ class jeemon extends eqLogic {
                     $result = 'Espace disque /tmp occupé : ' . $result . '%';
                     break;
                     case 'tmp_type':
-                    $result = 'Type de montage /tmp : ' . ;
+                    $result = 'Type de montage /tmp : ' . $result;
                     break;
                     case 'cpuload':
                     $result = 'Taux utilisation CPU : ' . $result . '%';
