@@ -259,13 +259,15 @@ class jeemon extends eqLogic {
                 switch ($id) {
                     case 'backup':
                     $replace = ($result) ? 'OK' : 'KO';
-                    $result = 'Sauvegarde locale de moins de 24h : ' . ;
+                    $result = 'Sauvegarde locale de moins de 24h : ' . $replace;
                     break;
                     case 'cloudbackup':
-                    $result = 'Sauvegarde cloud de moins de 24h : ' . ;
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $result = 'Sauvegarde cloud de moins de 24h : ' . $replace;
                     break;
                     case 'logerr':
-                    $result = 'Présence de nouvelles erreurs dans le fichier de log web : ' . ;
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $result = 'Présence de nouvelles erreurs dans le fichier de log web : ' . $replace;
                     break;
                     case 'hdd_space':
                     $result = 'Espace disque racine occupé : ' . $result . '%';
