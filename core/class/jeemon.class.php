@@ -246,6 +246,7 @@ class jeemon extends eqLogic {
             $options['title'] = "Rapport Jeedom";
             $options['message'] = $alert;
             $cmdalerte->execCmd($options);
+            log::add('jeemon', 'debug', 'Rapport ' . $this->getConfiguration('report') . ' : ' . $alert);
         }
     }
 
@@ -259,40 +260,40 @@ class jeemon extends eqLogic {
                 switch ($id) {
                     case 'backup':
                     $replace = ($result) ? 'OK' : 'KO';
-                    $result = 'Sauvegarde locale de moins de 24h : ' . $replace;
+                    $resmes = 'Sauvegarde locale de moins de 24h : ' . $replace;
                     break;
                     case 'cloudbackup':
                     $replace = ($result) ? 'OK' : 'KO';
-                    $result = 'Sauvegarde cloud de moins de 24h : ' . $replace;
+                    $resmes = 'Sauvegarde cloud de moins de 24h : ' . $replace;
                     break;
                     case 'logerr':
                     $replace = ($result) ? 'OK' : 'KO';
-                    $result = 'Présence de nouvelles erreurs dans le fichier de log web : ' . $replace;
+                    $resmes = 'Présence de nouvelles erreurs dans le fichier de log web : ' . $replace;
                     break;
                     case 'hdd_space':
-                    $result = 'Espace disque racine occupé : ' . $result . '%';
+                    $resmes = 'Espace disque racine occupé : ' . $result . '%';
                     break;
                     case 'tmp_space':
-                    $result = 'Espace disque /tmp occupé : ' . $result . '%';
+                    $resmes = 'Espace disque /tmp occupé : ' . $result . '%';
                     break;
                     case 'tmp_type':
-                    $result = 'Type de montage /tmp : ' . $result;
+                    $resmes = 'Type de montage /tmp : ' . $result;
                     break;
                     case 'cpuload':
-                    $result = 'Taux utilisation CPU : ' . $result . '%';
+                    $resmes = 'Taux utilisation CPU : ' . $result . '%';
                     break;
                     case 'memory':
-                    $result = 'Taux utilisation mémoire : ' . $result . '%';
+                    $resmes = 'Taux utilisation mémoire : ' . $result . '%';
                     break;
                     case 'uptime':
-                    $result = 'Dernier reboot : ' . $result;
+                    $resmes = 'Dernier reboot : ' . $result;
                     break;
 
                 }
                 if ($message != '') {
-                    $report .= $result . ', ' . $message . PHP_EOL;
+                    $report .= $resmes . ', ' . $message . PHP_EOL;
                 } else {
-                    $report .= $result . ' ' . PHP_EOL;
+                    $report .= $resmes . ' ' . PHP_EOL;
                 }
                 log::add('jeemon', 'debug', 'Rapport ' . $cmd->getLogicalId() . ' : ' . $result . ', ' . $message);
                 $this->checkAndUpdateCmd($id, $result);
