@@ -42,6 +42,7 @@ class jeemon extends eqLogic {
 
     public function checkCmds() {
         $this->checkCmdOk('backup','Sauvegarde locale de moins de 24h','binary','daily','');
+        //core,market::cloudUpload
         $this->checkCmdOk('cloudbackup','Sauvegarde cloud de moins de 24h','binary','daily','');
         $this->checkCmdOk('hdd_space','Espace disque / utilisé','numeric','hourly','%');
         $this->checkCmdOk('tmp_space','Espace disque /tmp utilisé','numeric','hourly','%');
