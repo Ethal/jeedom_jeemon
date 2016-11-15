@@ -252,11 +252,46 @@ class jeemon extends eqLogic {
     public function reportJeemon() {
         $report = '';
         foreach ($this->getCmd() as $cmd) {
-            if ($cmd->getType() == 'info') {
+            if ($cmd->getType() == 'info' && ($cmd->getConfiguration('alert') == 'alert' || $cmd->getConfiguration('alert') == 'report')) {
                 $id = $cmd->getLogicalId();
                 $result = $this->getExecCmd($id);
                 $message = $this->getExecAlert($id,$result);
-                $report .= $cmd->getLogicalId() . ' : ' . $result . ', ' . $message . PHP_EOL;
+                switch ($id) {
+                    case 'backup':
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $result = 'Sauvegarde locale de moins de 24h : ' . ;
+                    break;
+                    case 'cloudbackup':
+                    $result = 'Sauvegarde cloud de moins de 24h : ' . ;
+                    break;
+                    case 'logerr':
+                    $result = 'Présence de nouvelles erreurs dans le fichier de log web : ' . ;
+                    break;
+                    case 'hdd_space':
+                    $result = 'Espace disque racine occupé : ' . $result . '%';
+                    break;
+                    case 'tmp_space':
+                    $result = 'Espace disque /tmp occupé : ' . $result . '%';
+                    break;
+                    case 'tmp_type':
+                    $result = 'Type de montage /tmp : ' . ;
+                    break;
+                    case 'cpuload':
+                    $result = 'Taux utilisation CPU : ' . $result . '%';
+                    break;
+                    case 'memory':
+                    $result = 'Taux utilisation mémoire : ' . $result . '%';
+                    break;
+                    case 'uptime':
+                    $result = 'Dernier reboot : ' . $result;
+                    break;
+
+                }
+                if ($message != '') {
+                    $report .= $result . ', ' . $message . PHP_EOL;
+                } else {
+                    $report .= $result . ' ' . PHP_EOL;
+                }
                 log::add('jeemon', 'debug', 'Rapport ' . $cmd->getLogicalId() . ' : ' . $result . ', ' . $message);
                 $this->checkAndUpdateCmd($id, $result);
             }
