@@ -1,3 +1,43 @@
 === Configuration du plugin
 
-Il n'y a pas de page de configuration générale ni spécifique, un seul équipement est possible votre Jeedom.
+Il n'y a pas de page de configuration générale ni spécifique, un seul équipement est possible votre Jeedom, il est créer automatiquement.
+
+Le plugin donne le statut :
+
+  * Activité sur le log erreurs (en erreur si le fichier contient de nouvelles entrées, fréquence du check 15mn)
+
+  * Charge mémoire (en erreur si plus de 90%, fréquence du check 15mn)
+
+  * Charge moyenne CPU sur 15mn (en erreur si plus de 90%, fréquence du check 15mn)
+
+  * Durée depuis dernier reboot (en erreur si inférieur à 15mn, fréquence du check 15mn)
+
+  * Espace disque / utilisé (en erreur si plus de 90%, fréquence du check 1h)
+
+  * Espace disque /tmp utilisé (en erreur si plus de 90%, fréquence du check 1h)
+
+  * Sauvegarde cloud de moins de 24h (en erreur si sauvegarde du jour ou la veille non présente, fréquence 1 fois par jour minuit)
+
+  * Sauvegarde locale de moins de 24h (en erreur si sauvegarde du jour ou la veille non présente, fréquence 1 fois par jour minuit)
+
+  * Type de montage /tmp (en erreur si différent de tmpfs, fréquence 1 fois par jour minuit)
+
+Deux commandes sont disponibles :
+
+  * Rafraichir (relance tous les check)
+
+  * Rapport (lance tous les tests pour produire les rapports)
+
+Jeemon prend deux paramètres :
+
+  * Commande alerte (c'est la commande qui sera utilisé si un check est en erreur pour avertir l'utilisateur)
+
+  * Commande rapport (c'est la commande qui sera utilisé pour envoyer un compte-rendu sur la commande rapport uniquement des checks en niveau "alerte" et "rapport")
+
+Chaque check prend un niveau d'alerte :
+
+  * Alerte (à ce niveau, chaque check qui dépasse le seuil sera notifier)
+
+  * Rapport (sur ce niveau, les check ne déclencheront pas de notification sur seuil mais la commande sera incluse dans le rapport)
+
+  * Aucun (la commande ne sera ni dans les rapports ni en alerte)
