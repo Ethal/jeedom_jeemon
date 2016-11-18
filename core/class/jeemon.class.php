@@ -125,14 +125,18 @@ class jeemon extends eqLogic {
             $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
             case 'cloudbackup':
-            $backup = repo_market::listeBackup();
-            if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
-                $result = 1;
-            } else {
-                $result = 0;
-            }
-            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
-            break;
+		if (market::cloudUpload) {	
+		    $backup = repo_market::listeBackup();
+		    if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
+			$result = 1;
+		    } else {
+			$result = 0;
+		    }
+		} else {
+			$result = 0;
+		}
+	    log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
+	    break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon','http.error');
