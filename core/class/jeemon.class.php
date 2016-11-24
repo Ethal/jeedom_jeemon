@@ -51,6 +51,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
         $this->checkCmdOk('logdaily','Erreurs dans les logs Jeedom de la veille','binary','daily','');
+        $this->checkCmdOk('internet','Connexion internet','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
         $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'refresh');
         if (!is_object($jeemonCmd)) {
@@ -151,6 +152,11 @@ class jeemon extends eqLogic {
             $result = ($result == '1') ? '0' : '1';
             log::add('jeemon', 'debug', 'Log daily : ' . $log_path . $result);
             break;
+            case 'internet':
+            $cmd = "wget -q --spider http://google.com";
+            exec($cmd, $output, $return_var);
+            $result = ($return_var == '0') ? '1' : '0';
+            break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
             $pattern = '/([1-9]*?)\%/';
@@ -233,6 +239,11 @@ class jeemon extends eqLogic {
                 $return = 'Attention, des fichiers de log contiennent des entrées en erreur : ' . $error;
             }
             break;
+            case 'internet':
+            if ($result == 0) {
+                $return = 'Problème de connexion internet';
+            }
+            break;
             case 'tmp_type':
             if (!preg_match('/tmpfs/',$result)) {
                 $return = 'Attention, le répertoire tmp n\'est pas en mémoire';
@@ -297,6 +308,10 @@ class jeemon extends eqLogic {
                     case 'logdaily':
                     $replace = ($result) ? 'OK' : 'KO';
                     $resmes = 'Erreurs dans les fichiers de log Jeedom : ' . $replace;
+                    break;
+                    case 'internet':
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $resmes = 'Connexion internet : ' . $replace;
                     break;
                     case 'hdd_space':
                     $resmes = 'Espace disque racine occupé : ' . $result . '%';

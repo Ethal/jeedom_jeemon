@@ -24,6 +24,8 @@ Le plugin donne le statut :
 
   * Type de montage /tmp (en erreur si différent de tmpfs, fréquence 1 fois par jour minuit)
 
+  * Connexion internet (en erreur si l'on accède pas à internet, fréquence du check 15mn)
+
 Deux commandes sont disponibles :
 
   * Rafraichir (relance tous les check)
