@@ -50,6 +50,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','');
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
+        $this->checkCmdOk('logerr','Erreurs dans les logs Jeedom de la veille','binary','daily','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
         $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'refresh');
         if (!is_object($jeemonCmd)) {
@@ -93,7 +94,7 @@ class jeemon extends eqLogic {
         } else {
             $server = 'http.error';
         }
-        log::add('jeemon', 'debug', 'Server ' . $_SERVER['SERVER_SOFTWARE']);
+        log::add('jeemon', 'debug', 'Server ' . $_SERVER['SERVER_SOFTWARE'] . ' ' . $server);
         config::save('logerr', $server,  'jeemon');
         $this->checkCmds();
     }
@@ -144,6 +145,12 @@ class jeemon extends eqLogic {
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l');
             $result = ($result == '1') ? '0' : '1';
             log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
+            break;
+            case 'logdaily':
+            $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+            $result = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c 'ERROR' {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d':' -f1 | wc -l');
+            $result = ($result == '1') ? '0' : '1';
+            log::add('jeemon', 'debug', 'Log daily : ' . $log_path . $result);
             break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
@@ -220,6 +227,13 @@ class jeemon extends eqLogic {
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $error;
             }
             break;
+            case 'logdaily':
+            if ($result == 0) {
+                $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+                $error = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c 'ERROR' {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d':' -f1');
+                $return = 'Attention, des fichiers de log contiennent des entrées en erreur : ' . $error;
+            }
+            break;
             case 'tmp_type':
             if (!preg_match('/tmpfs/',$result)) {
                 $return = 'Attention, le répertoire tmp n\'est pas en mémoire';
@@ -280,6 +294,10 @@ class jeemon extends eqLogic {
                     case 'logerr':
                     $replace = ($result) ? 'OK' : 'KO';
                     $resmes = 'Présence de nouvelles erreurs dans le fichier de log web : ' . $replace;
+                    break;
+                    case 'logdaily':
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $resmes = 'Erreurs dans les fichiers de log Jeedom : ' . $replace;
                     break;
                     case 'hdd_space':
                     $resmes = 'Espace disque racine occupé : ' . $result . '%';
