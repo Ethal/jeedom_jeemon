@@ -141,6 +141,7 @@ class jeemon extends eqLogic {
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon','http.error');
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l');
+	$result = ($result) ? 0:1;
         log::add('jeemon', 'debug', 'Log file : ' . $log_path . $file_name . ' ' . $result);    
 	break;
             case 'hdd_space':
@@ -212,7 +213,8 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             if ($result == 0) {
-                $return = 'Attention, le log jeedom contient des erreurs';
+		    $error = shell_exec("tail -1 /usr/share/nginx/www/jeedom/log/nginx-error.log");
+                $return = 'Attention, le log jeedom contient des erreurs : ' . $error;
             }
             break;
             case 'tmp_type':
