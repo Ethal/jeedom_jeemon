@@ -50,7 +50,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','');
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
-        $this->checkCmdOk('logerr','Erreurs dans les logs Jeedom de la veille','binary','daily','');
+        $this->checkCmdOk('logdaily','Erreurs dans les logs Jeedom de la veille','binary','daily','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
         $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'refresh');
         if (!is_object($jeemonCmd)) {
