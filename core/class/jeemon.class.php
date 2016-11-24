@@ -125,7 +125,7 @@ class jeemon extends eqLogic {
             $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
             case 'cloudbackup':
-		if (market::cloudUpload) {	
+		if (config::byKey('market::cloudUpload', 'core')) {	
 		    $backup = repo_market::listeBackup();
 		    if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
 			$result = 1;
@@ -140,8 +140,9 @@ class jeemon extends eqLogic {
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon','http.error');
-            $result = shell_exec('if [ $(find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l) -gt 0 ]; then echo "0"; else echo "1"; fi');
-            break;
+            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l');
+        log::add('jeemon', 'debug', 'Log file : ' . $log_path . $file_name . ' ' . $result);    
+	break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
             $pattern = '/([1-9]*?)\%/';
