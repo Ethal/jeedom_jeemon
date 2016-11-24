@@ -6,6 +6,8 @@ Le plugin donne le statut :
 
   * Activité sur le log erreurs (en erreur si le fichier contient de nouvelles entrées, fréquence du check 15mn)
 
+  * Erreurs dans les logs Jeedom (en erreur si les fichiers du répertoire de log - tous plugins - contiennent le tag ERROR, fréquence 1 fois par jour minuit)
+
   * Charge mémoire (en erreur si plus de 90%, fréquence du check 15mn)
 
   * Charge moyenne CPU sur 15mn (en erreur si plus de 90%, fréquence du check 15mn)
