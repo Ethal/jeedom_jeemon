@@ -89,12 +89,11 @@ class jeemon extends eqLogic {
             $jeemon->setName('Jeemon');
             $jeemon->save();
         }
-        if (strpos($_SERVER['SERVER_SOFTWARE'],'Nginx') !== false) {
+        if (file_exists(dirname(__FILE__) . '/../../../../log/nginx-error.log')) {
             $server = 'nginx-error.log';//welldone !!!
         } else {
             $server = 'http.error';
         }
-        log::add('jeemon', 'debug', 'Server ' . $_SERVER['SERVER_SOFTWARE'] . ' ' . $server);
         config::save('logerr', $server,  'jeemon');
         $this->checkCmds();
     }
