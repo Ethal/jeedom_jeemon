@@ -148,7 +148,7 @@ class jeemon extends eqLogic {
             break;
             case 'logdaily':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            $result = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d':' -f1 | wc -l');
+            $result = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d":" -f1 | wc -l');
             $result = ($result == '1') ? '0' : '1';
             log::add('jeemon', 'debug', 'Log daily : ' . $log_path . $result);
             break;
@@ -230,7 +230,7 @@ class jeemon extends eqLogic {
             case 'logdaily':
             if ($result == 0) {
                 $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-                $error = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d':' -f1');
+                $error = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d":" -f1');
                 $return = 'Attention, des fichiers de log contiennent des entrées en erreur : ' . $error;
             }
             break;
