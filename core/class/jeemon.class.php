@@ -89,12 +89,13 @@ class jeemon extends eqLogic {
             $jeemon->save();
         }
         if (strpos($_SERVER['SERVER_SOFTWARE'],'Nginx') !== false) {
-             $server = 'nginx-error.log';//welldone !!!
-         } else {
-             $server = 'http.error';
-         }
-       config::save('logerr', $server,  'jeemon');
-       $this->checkCmds();
+            $server = 'nginx-error.log';//welldone !!!
+        } else {
+            $server = 'http.error';
+        }
+        log::add('jeemon', 'debug', 'Server ' . $_SERVER['SERVER_SOFTWARE']);
+        config::save('logerr', $server,  'jeemon');
+        $this->checkCmds();
     }
 
     public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
@@ -125,25 +126,25 @@ class jeemon extends eqLogic {
             $result = shell_exec('if [ $(find ' . $backup_path . ' -mtime -1 | wc -l) -gt 0 ]; then echo "1"; else echo "0"; fi');
             break;
             case 'cloudbackup':
-		if (config::byKey('market::cloudUpload', 'core')) {	
-		    $backup = repo_market::listeBackup();
-		    if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
-			$result = 1;
-		    } else {
-			$result = 0;
-		    }
-		} else {
-			$result = 0;
-		}
-	    log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
-	    break;
+            if (config::byKey('market::cloudUpload', 'core')) {
+                $backup = repo_market::listeBackup();
+                if (strpos($backup[0], date('Y-m-d', time() - 60 * 60 * 24)) !== false || strpos($backup[0], date('Y-m-d')) !== false) {
+                    $result = 1;
+                } else {
+                    $result = 0;
+                }
+            } else {
+                $result = 0;
+            }
+            log::add('jeemon', 'debug', 'Cloud ' . $backup[0] . ' ' . date('Y-m-d', time() - 60 * 60 * 24) . ' ' . date('Y-m-d'));
+            break;
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-            $file_name = config::byKey('logerr', 'jeemon','http.error');
+            $file_name = config::byKey('logerr', 'jeemon');
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -mmin -15 | wc -l');
-	$result = ($result) ? 0:1;
-        log::add('jeemon', 'debug', 'Log file : ' . $log_path . $file_name . ' ' . $result);    
-	break;
+            $result = ($result == '1') ? '0' : '1';
+            log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
+            break;
             case 'hdd_space':
             $space = shell_exec('sudo df -h / | tail -n 1');
             $pattern = '/([1-9]*?)\%/';
@@ -213,7 +214,9 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             if ($result == 0) {
-		    $error = shell_exec("tail -1 /usr/share/nginx/www/jeedom/log/nginx-error.log");
+                $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+                $file_name = config::byKey('logerr', 'jeemon');
+                $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $error;
             }
             break;
@@ -341,16 +344,16 @@ class jeemon extends eqLogic {
 
 class jeemonCmd extends cmd {
     public function execute($_options = null) {
-		if ($this->getType() == 'info') {
-			return $this->getConfiguration('value');
-		} else {
-			$eqLogic = $this->getEqLogic();
+        if ($this->getType() == 'info') {
+            return $this->getConfiguration('value');
+        } else {
+            $eqLogic = $this->getEqLogic();
             if ($this->getLogicalId() == 'rapport') {
                 $eqLogic->reportJeemon();
             } else {
                 $eqLogic->checkJeemon('all');
             }
 
-		}
-	}
+        }
+    }
 }
