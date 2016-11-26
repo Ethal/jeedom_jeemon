@@ -82,21 +82,22 @@ class jeemon extends eqLogic {
 
 
     public function checkInstall() {
-        $eqLogic = jeemon::byLogicalId('jeemon','jeemon');
-        if (!is_object($eqLogic)) {
-            $jeemon = new jeemon();
-            $jeemon->setEqType_name('jeemon');
-            $jeemon->setLogicalId('jeemon');
-            $jeemon->setName('Jeemon');
-            $jeemon->save();
-        }
         if (file_exists(dirname(__FILE__) . '/../../../../log/nginx-error.log')) {
             $server = 'nginx-error.log';//welldone !!!
         } else {
             $server = 'http.error';
         }
-        config::save('logerr', $server,  'jeemon');
-        $this->checkCmds();
+        //config::save('logerr', $server,  'jeemon');
+        $jeemon = jeemon::byLogicalId('jeemon','jeemon');
+        if (!is_object($eqLogic)) {
+            $jeemon = new jeemon();
+            $jeemon->setEqType_name('jeemon');
+            $jeemon->setLogicalId('jeemon');
+            $jeemon->setName('Jeemon');
+        }
+        $jeemon->setIsEnable(1);
+        $jeemon->save();
+        //$jeemon->checkCmds();//done in postUpdate
     }
 
     public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
@@ -173,7 +174,7 @@ class jeemon extends eqLogic {
             $result = shell_exec("sudo df -h /tmp | tail -n 1 | awk '{print $1}'");
             break;
             case 'cpuload':
-            $result = shell_exec("uptime | awk  '{print $11}'");
+            $result = shell_exec("cat /proc/loadavg | awk  '{print $3}'");
             $core = shell_exec("nproc --all");
             $result = $result / $core * 100;
             break;
@@ -288,7 +289,7 @@ class jeemon extends eqLogic {
     public function reportJeemon() {
         $report = '';
         foreach ($this->getCmd() as $cmd) {
-            if ($cmd->getType() == 'info' && ($cmd->getConfiguration('alert') == 'alert' || $cmd->getConfiguration('alert') == 'report')) {
+            if ($cmd->getType() == 'info' && $cmd->getConfiguration('alert') != 'none')) {
                 $id = $cmd->getLogicalId();
                 $result = $this->getExecCmd($id);
                 $message = $this->getExecAlert($id,$result);
