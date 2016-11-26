@@ -289,7 +289,7 @@ class jeemon extends eqLogic {
     public function reportJeemon() {
         $report = '';
         foreach ($this->getCmd() as $cmd) {
-            if ($cmd->getType() == 'info' && $cmd->getConfiguration('alert') != 'none')) {
+            if ($cmd->getType() == 'info' && $cmd->getConfiguration('alert') != 'none') {
                 $id = $cmd->getLogicalId();
                 $result = $this->getExecCmd($id);
                 $message = $this->getExecAlert($id,$result);
