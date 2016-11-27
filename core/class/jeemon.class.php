@@ -89,7 +89,7 @@ class jeemon extends eqLogic {
         }
         //config::save('logerr', $server,  'jeemon');
         $jeemon = jeemon::byLogicalId('jeemon','jeemon');
-        if (!is_object($eqLogic)) {
+        if (!is_object($jeemon)) {
             $jeemon = new jeemon();
             $jeemon->setEqType_name('jeemon');
             $jeemon->setLogicalId('jeemon');
@@ -97,7 +97,7 @@ class jeemon extends eqLogic {
         }
         $jeemon->setIsEnable(1);
         $jeemon->save();
-        //$jeemon->checkCmds();//done in postUpdate
+        $jeemon->checkCmds();//done in postUpdate
     }
 
     public function checkCmdOk($_id, $_name, $_type, $_cron, $_unite) {
