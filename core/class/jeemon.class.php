@@ -143,7 +143,17 @@ class jeemon extends eqLogic {
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon');
-            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
+            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 -size +5 | wc -l');
+            $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
+            if ($result == '0') {
+                $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
+                if ($error != $jeemonCmd->getConfiguration('error')) {
+                    $jeemonCmd->setConfiguration('error', $error);
+                    $jeemonCmd->save();
+                } else {
+                    $result = 1;
+                }
+            }
             log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
             break;
             case 'logdaily':
@@ -226,10 +236,8 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             if ($result == 0) {
-                $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-                $file_name = config::byKey('logerr', 'jeemon');
-                $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
-                $return = 'Attention, le log jeedom contient des erreurs : ' . $error;
+                $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
+                $return = 'Attention, le log jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
             }
             break;
             case 'logdaily':
