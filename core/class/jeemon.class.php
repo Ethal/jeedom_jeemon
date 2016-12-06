@@ -192,8 +192,8 @@ class jeemon extends eqLogic {
             log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
             break;
             case 'logdaily':
-            $result = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d":" -f1 | wc -l');
-            $result = ($result == '1') ? '0' : '1';
+            $result = shell_exec('grep "ERROR" ' . $log_path . '/ | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | wc -l');
+            $result = ($result == '0') ? '1' : '0';
             log::add('jeemon', 'debug', 'Log daily : ' . $log_path . $result);
             break;
             case 'internet':
