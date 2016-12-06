@@ -143,7 +143,7 @@ class jeemon extends eqLogic {
             case 'logerr':
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon');
-            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 -size +5 | wc -l');
+            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
             $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
             if ($result == '0') {
                 $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
@@ -237,9 +237,7 @@ class jeemon extends eqLogic {
             case 'logerr':
             if ($result == 0) {
                 $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
-                log::add('jeemon', 'debug', 'Avant error');
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
-                log::add('jeemon', 'debug', 'Après error');
             }
             break;
             case 'logdaily':
