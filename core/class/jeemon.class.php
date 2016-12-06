@@ -237,7 +237,9 @@ class jeemon extends eqLogic {
             case 'logerr':
             if ($result == 0) {
                 $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
+                log::add('jeemon', 'debug', 'Avant error');
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
+                log::add('jeemon', 'debug', 'Après error');
             }
             break;
             case 'logdaily':
