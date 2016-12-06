@@ -50,6 +50,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','');
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
+        $this->checkCmdOk('cronerr','Erreurs dans le cron','binary','15','');
         $this->checkCmdOk('logdaily','Erreurs dans les logs Jeedom de la veille','binary','daily','');
         $this->checkCmdOk('internet','Connexion internet','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
@@ -144,7 +145,23 @@ class jeemon extends eqLogic {
             $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon');
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
-            $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
+            $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
+            if ($result == '0') {
+                $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
+                if ($error != $jeemonCmd->getConfiguration('error')) {
+                    $jeemonCmd->setConfiguration('error', $error);
+                    $jeemonCmd->save();
+                } else {
+                    $result = 1;
+                }
+            }
+            log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
+            break;
+            case 'logerr':
+            $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+            $file_name = 'cron_execution';
+            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
+            $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
             if ($result == '0') {
                 $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
                 if ($error != $jeemonCmd->getConfiguration('error')) {
@@ -236,8 +253,14 @@ class jeemon extends eqLogic {
             break;
             case 'logerr':
             if ($result == 0) {
-                $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),'logerror');
+                $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
+            }
+            break;
+            case 'cronerr':
+            if ($result == 0) {
+                $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
+                $return = 'Attention, le cron jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
             }
             break;
             case 'logdaily':
@@ -312,6 +335,10 @@ class jeemon extends eqLogic {
                     case 'logerr':
                     $replace = ($result) ? 'OK' : 'KO';
                     $resmes = 'Présence de nouvelles erreurs dans le fichier de log web : ' . $replace;
+                    break;
+                    case 'cronerr':
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $resmes = 'Présence de nouvelles erreurs dans le cron : ' . $replace;
                     break;
                     case 'logdaily':
                     $replace = ($result) ? 'OK' : 'KO';
