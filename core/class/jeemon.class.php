@@ -50,6 +50,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('uptime','Durée depuis dernier reboot','string','15','');
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
+        $this->checkCmdOk('cronerr','Erreurs dans le cron','binary','daily','');
         $this->checkCmdOk('logdaily','Erreurs dans les logs Jeedom de la veille','binary','daily','');
         $this->checkCmdOk('internet','Connexion internet','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
@@ -157,10 +158,16 @@ class jeemon extends eqLogic {
             }
             log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
             break;
+            case 'cronerr':
+            $file_name = 'cron_execution';
+            $result = shell_exec('grep "PHP" ' . $log_path . '/' . $file_name . ' | wc -l');
+            $result = ($result == '0') ? '1' : '0';
+            log::add('jeemon', 'debug', 'Cron daily : ' . $result);
+            break;
             case 'logdaily':
             $result = shell_exec('grep "ERROR" ' . $log_path . '/ | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | wc -l');
             $result = ($result == '0') ? '1' : '0';
-            log::add('jeemon', 'debug', 'Log daily : ' . $log_path . $result);
+            log::add('jeemon', 'debug', 'Log daily : ' . $result);
             break;
             case 'internet':
             $cmd = "wget -q --spider http://google.com";
@@ -240,6 +247,11 @@ class jeemon extends eqLogic {
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
             }
             break;
+            case 'logerr':
+            if ($result == 0) {
+                $return = 'Attention, le cron jeedom contient des erreurs';
+            }
+            break;
             case 'logdaily':
             if ($result == 0) {
                 $log_path = realpath(dirname(__FILE__) . '/../../../../log');
@@ -312,6 +324,10 @@ class jeemon extends eqLogic {
                     case 'logerr':
                     $replace = ($result) ? 'OK' : 'KO';
                     $resmes = 'Présence de nouvelles erreurs dans le fichier de log web : ' . $replace;
+                    break;
+                    case 'cronerr':
+                    $replace = ($result) ? 'OK' : 'KO';
+                    $resmes = 'Erreurs dans le fichier de log web : ' . $replace;
                     break;
                     case 'logdaily':
                     $replace = ($result) ? 'OK' : 'KO';
