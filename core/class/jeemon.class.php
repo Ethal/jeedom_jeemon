@@ -51,6 +51,7 @@ class jeemon extends eqLogic {
         $this->checkCmdOk('cpuload','Charge moyenne CPU sur 15mn','numeric','15','%');
         $this->checkCmdOk('logerr','Activité sur le log erreurs','binary','15','');
         $this->checkCmdOk('cronerr','Erreurs dans le cron','binary','15','');
+        $this->checkCmdOk('cronexec','Erreurs dans le cron execution','binary','15','');
         $this->checkCmdOk('logdaily','Erreurs dans les logs Jeedom de la veille','binary','daily','');
         $this->checkCmdOk('internet','Connexion internet','binary','15','');
         $this->checkCmdOk('memory','Charge mémoire','numeric','15','%');
@@ -123,6 +124,7 @@ class jeemon extends eqLogic {
 
     public function getExecCmd($id) {
         $result = '';
+        $log_path = realpath(dirname(__FILE__) . '/../../../../log');
         switch ($id) {
             case 'backup':
             $backup_path = realpath(dirname(__FILE__) . '/../../../../backup');
@@ -142,12 +144,12 @@ class jeemon extends eqLogic {
             }
             break;
             case 'logerr':
-            $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $file_name = config::byKey('logerr', 'jeemon');
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
             $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
             if ($result == '0') {
                 $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
+                log::add('jeemon', 'debug', 'Tail : ' . $error);
                 if ($error != $jeemonCmd->getConfiguration('error')) {
                     $jeemonCmd->setConfiguration('error', $error);
                     $jeemonCmd->save();
@@ -157,13 +159,29 @@ class jeemon extends eqLogic {
             }
             log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
             break;
-            case 'logerr':
-            $log_path = realpath(dirname(__FILE__) . '/../../../../log');
+            case 'cronerr':
+            $file_name = 'cron';
+            $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
+            $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
+            if ($result == '0') {
+                $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
+                log::add('jeemon', 'debug', 'Tail : ' . $error);
+                if ($error != $jeemonCmd->getConfiguration('error')) {
+                    $jeemonCmd->setConfiguration('error', $error);
+                    $jeemonCmd->save();
+                } else {
+                    $result = 1;
+                }
+            }
+            log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
+            break;
+            case 'cronexec':
             $file_name = 'cron_execution';
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
             $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
             if ($result == '0') {
                 $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
+                log::add('jeemon', 'debug', 'Tail : ' . $error);
                 if ($error != $jeemonCmd->getConfiguration('error')) {
                     $jeemonCmd->setConfiguration('error', $error);
                     $jeemonCmd->save();
@@ -174,7 +192,6 @@ class jeemon extends eqLogic {
             log::add('jeemon', 'debug', 'Log file : ' . $log_path . '/' . $file_name . ' ' . $result);
             break;
             case 'logdaily':
-            $log_path = realpath(dirname(__FILE__) . '/../../../../log');
             $result = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d":" -f1 | wc -l');
             $result = ($result == '1') ? '0' : '1';
             log::add('jeemon', 'debug', 'Log daily : ' . $log_path . $result);
