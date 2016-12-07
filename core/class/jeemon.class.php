@@ -146,7 +146,7 @@ class jeemon extends eqLogic {
             $file_name = config::byKey('logerr', 'jeemon');
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
             $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
-            if ($result == '0') {
+            if ($result == 0) {
                 $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
                 log::add('jeemon', 'debug', 'Tail : ' . $error);
                 if ($error != $jeemonCmd->getConfiguration('error')) {
@@ -247,16 +247,14 @@ class jeemon extends eqLogic {
                 $return = 'Attention, le log jeedom contient des erreurs : ' . $jeemonCmd->getConfiguration('error');
             }
             break;
-            case 'logerr':
+            case 'cronerr':
             if ($result == 0) {
                 $return = 'Attention, le cron jeedom contient des erreurs';
             }
             break;
             case 'logdaily':
             if ($result == 0) {
-                $log_path = realpath(dirname(__FILE__) . '/../../../../log');
-                $error = shell_exec('find ' . $log_path . '/ -type f -exec grep -H -c "ERROR" {} \; | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | grep 0$ | cut -d":" -f1');
-                $return = 'Attention, des fichiers de log contiennent des entrées en erreur : ' . $error;
+                $return = 'Attention, des fichiers de log contiennent des entrées en erreur';
             }
             break;
             case 'internet':
