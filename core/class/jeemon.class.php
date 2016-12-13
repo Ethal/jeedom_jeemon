@@ -88,7 +88,7 @@ class jeemon extends eqLogic {
         } else {
             $server = 'http.error';
         }
-        //config::save('logerr', $server,  'jeemon');
+        config::save('logerr', $server,  'jeemon');
         $jeemon = jeemon::byLogicalId('jeemon','jeemon');
         if (!is_object($jeemon)) {
             $jeemon = new jeemon();
