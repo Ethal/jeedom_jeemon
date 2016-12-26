@@ -417,16 +417,12 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_description">1. Description</a>
 <ul class="sectlevel2">
-<li><a href="#_awox_smartplug_prises_bluetooth">1.1. Awox Smartplug, prises Bluetooth</a></li>
+<li><a href="#_jeedom_watcher_superviser_jeedom">1.1. Jeedom Watcher, superviser Jeedom</a></li>
 </ul>
 </li>
 <li><a href="#_configuration">2. Configuration</a>
 <ul class="sectlevel2">
-<li><a href="#_configuration_du_plugin">2.1. Configuration du plugin</a>
-<ul class="sectlevel3">
-<li><a href="#_utilisation_en_déporté">2.1.1. Utilisation en déporté</a></li>
-</ul>
-</li>
+<li><a href="#_configuration_du_plugin">2.1. Configuration du plugin</a></li>
 </ul>
 </li>
 <li><a href="#_faq">3. FAQ</a></li>
@@ -438,12 +434,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h2 id="_description">1. Description</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_awox_smartplug_prises_bluetooth">1.1. Awox Smartplug, prises Bluetooth</h3>
+<h3 id="_jeedom_watcher_superviser_jeedom">1.1. Jeedom Watcher, superviser Jeedom</h3>
 <div class="paragraph">
-<p>Plugin permettant d&#8217;utiliser des prises Smartplug Awox.</p>
-</div>
-<div class="paragraph">
-<p>Les Smartplug sont des prises Bluetooth de la marque Awox. Nul besoin d&#8217;autre chose qu&#8217;une connexion bluetooth pour commander la prise, y compris via un déporté.</p>
+<p>Plugin permettant de superviser les points critiques pour le bon fonctionnement Jeedom.</p>
 </div>
 <hr>
 </div>
@@ -455,27 +448,91 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_configuration_du_plugin">2.1. Configuration du plugin</h3>
 <div class="paragraph">
-<p>Il n&#8217;y a pas de page de configuration générale.</p>
+<p>Il n&#8217;y a pas de page de configuration générale ni spécifique, un seul équipement est possible votre Jeedom, il est créer automatiquement.</p>
 </div>
 <div class="paragraph">
-<p>En créant un équipement, il faut rentrer l&#8217;adresse bluetooth de l&#8217;équipement.</p>
+<p>Le plugin donne le statut :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Activité sur le log erreurs (en erreur si le fichier contient de nouvelles entrées, fréquence du check 15mn)</p>
+</li>
+<li>
+<p>Erreurs dans les logs Jeedom (en erreur si les fichiers du répertoire de log - tous plugins - contiennent le tag ERROR, fréquence 1 fois par jour minuit)</p>
+</li>
+<li>
+<p>Charge mémoire (en erreur si plus de 90%, fréquence du check 15mn)</p>
+</li>
+<li>
+<p>Charge moyenne CPU sur 15mn (en erreur si plus de 90%, fréquence du check 15mn)</p>
+</li>
+<li>
+<p>Durée depuis dernier reboot (en erreur si inférieur à 15mn, fréquence du check 15mn)</p>
+</li>
+<li>
+<p>Espace disque / utilisé (en erreur si plus de 90%, fréquence du check 1h)</p>
+</li>
+<li>
+<p>Espace disque /tmp utilisé (en erreur si plus de 90%, fréquence du check 1h)</p>
+</li>
+<li>
+<p>Sauvegarde cloud de moins de 24h (en erreur si sauvegarde du jour ou la veille non présente, fréquence 1 fois par jour minuit)</p>
+</li>
+<li>
+<p>Sauvegarde locale de moins de 24h (en erreur si sauvegarde du jour ou la veille non présente, fréquence 1 fois par jour minuit)</p>
+</li>
+<li>
+<p>Type de montage /tmp (en erreur si différent de tmpfs, fréquence 1 fois par jour minuit)</p>
+</li>
+<li>
+<p>Connexion internet (en erreur si l&#8217;on accède pas à internet, fréquence du check 15mn)</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>A partir de là on a deux commandes on/off qui permettent d&#8217;activer le relais et deux informations pour le statut et la consommation</p>
+<p>Deux commandes sont disponibles :</p>
 </div>
-<div class="sect3">
-<h4 id="_utilisation_en_déporté">2.1.1. Utilisation en déporté</h4>
-<div class="paragraph">
-<p>Il est possible d&#8217;envoyer les commandes bluetooth a un déporté.</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Rafraichir (relance tous les check)</p>
+</li>
+<li>
+<p>Rapport (lance tous les tests pour produire les rapports)</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Dans ce cas, il faut renseigner les paramètres de connexion SSH.</p>
+<p>Jeemon prend deux paramètres :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Commande alerte (c&#8217;est la commande qui sera utilisé si un check est en erreur pour avertir l&#8217;utilisateur)</p>
+</li>
+<li>
+<p>Commande rapport (c&#8217;est la commande qui sera utilisé pour envoyer un compte-rendu sur la commande rapport uniquement des checks en niveau "alerte" et "rapport")</p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
-<p>Aucun Jeedom n&#8217;est nécessaire sur l&#8217;équipement distant.</p>
+<p>Chaque check prend un niveau d&#8217;alerte :</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Alerte (à ce niveau, chaque check qui dépasse le seuil sera notifier)</p>
+</li>
+<li>
+<p>Rapport (sur ce niveau, les check ne déclencheront pas de notification sur seuil mais la commande sera incluse dans le rapport)</p>
+</li>
+<li>
+<p>Aucun (la commande ne sera ni dans les rapports ni en alerte)</p>
+</li>
+</ul>
 </div>
 <hr>
-</div>
 </div>
 </div>
 </div>
@@ -485,7 +542,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="openblock panel">
 <div class="title">Est-ce que le plugin s&#8217;appuie sur des API tiers ?</div><div class="content">
 <div class="paragraph">
-<p>Le plugin utilise le bluetooth pour lancer les commandes, Awox Smartplug est cloudless.</p>
+<p>Non le plugin monitore Jeedom en local et uniquement en local.</p>
 </div>
 </div>
 </div>
