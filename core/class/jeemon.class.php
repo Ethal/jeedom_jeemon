@@ -161,12 +161,12 @@ class jeemon extends eqLogic {
             case 'cronerr':
             $file_name = 'cron_execution';
             $result = shell_exec('grep "PHP" ' . $log_path . '/' . $file_name . ' | wc -l');
-            $result = ($result == '0') ? '1' : '0';
+            $result = ($result == 0) ? 1 : 0;
             log::add('jeemon', 'debug', 'Cron daily : ' . $result);
             break;
             case 'logdaily':
             $result = shell_exec('grep "ERROR" -R ' . $log_path . '/ | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | wc -l');
-            $result = ($result == '0') ? '1' : '0';
+            $result = ($result == 0) ? 1 : 0;
             log::add('jeemon', 'debug', 'Log daily : ' . $result);
             break;
             case 'internet':
@@ -249,12 +249,13 @@ class jeemon extends eqLogic {
             break;
             case 'cronerr':
             if ($result == 0) {
-                $return = 'Attention, le cron jeedom contient des erreurs';
+                $return = 'Attention, le cron jeedom contient des erreurs, veuillez vérifier cron_execution';
             }
             break;
             case 'logdaily':
             if ($result == 0) {
-                $return = 'Attention, des fichiers de log contiennent des entrées en erreur';
+                $logs = shell_exec('grep "ERROR" -Rl ' . $log_path . '/');
+                $return = 'Attention, des fichiers de log contiennent des entrées en erreur : ' . $logs;
             }
             break;
             case 'internet':
