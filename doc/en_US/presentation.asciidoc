@@ -1,3 +1,3 @@
-=== Jeedom Watcher, superviser Jeedom
+=== Jeedom Watcher, monitoring Jeedom
 
 Plugin permettant de superviser les points critiques pour le bon fonctionnement Jeedom.
