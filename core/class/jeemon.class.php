@@ -78,7 +78,7 @@ class jeemon extends eqLogic {
         }
         $jeemonCmd->setSubType('other');
         $jeemonCmd->save();
-        $this->checkJeemon('all');
+        //$this->checkJeemon('all');
     }
 
 
