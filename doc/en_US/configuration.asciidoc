@@ -1,6 +1,6 @@
 === The plugin configuration
 
-Il n'y a pas de page de configuration générale ni spécifique, un seul équipement est possible votre Jeedom, il est créer automatiquement.
+There is no general or specific configuration page, a single device is possible your Jeedom, it is created automatically.
 
 Le plugin donne le statut :
 
