@@ -161,14 +161,14 @@ class jeemon extends eqLogic {
             break;
             case 'cronerr':
             $file_name = 'cron_execution';
-            $result = shell_exec('grep "PHP" ' . $log_path . '/' . $file_name . ' | wc -l');
-            $result = ($result == 0) ? 1 : 0;
-            log::add('jeemon', 'debug', 'Cron daily : ' . $result);
+            $test = shell_exec('grep "PHP" ' . $log_path . '/' . $file_name . ' | wc -l');
+            $result = ($test == 0) ? 1 : 0;
+            log::add('jeemon', 'debug', 'Cron daily : ' . $result . '(' . $test . ')');
             break;
             case 'logdaily':
-            $result = shell_exec('grep "ERROR" -R ' . $log_path . '/ | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | wc -l');
-            $result = ($result == 0) ? 1 : 0;
-            log::add('jeemon', 'debug', 'Log daily : ' . $result);
+            $test = shell_exec('grep "ERROR" -R ' . $log_path . '/ | grep ' . date('Y-m-d', time() - 60 * 60 * 24) . ' | wc -l');
+            $result = ($test == 0) ? 1 : 0;
+            log::add('jeemon', 'debug', 'Log daily : ' . $result . '(' . $test . ')');
             break;
             case 'internet':
             $cmd = "wget -q --spider http://google.com";
