@@ -113,7 +113,6 @@ class jeemon extends eqLogic {
             $jeemonCmd->setType('info');
             $jeemonCmd->setTemplate("mobile",'line' );
             $jeemonCmd->setTemplate("dashboard",'line' );
-            $jeemonCmd->setDisplay("forceReturnLineAfter","1");
         }
         $jeemonCmd->setSubType($_type);
         $jeemonCmd->setUnite($_unite);
