@@ -230,6 +230,7 @@ class jeemon extends eqLogic {
 
     public function getExecAlert($id,$result) {
         $return = '';
+        $log_path = realpath(dirname(__FILE__) . '/../../../../log');
         switch ($id) {
             case 'backup':
             if ($result == 0) {
