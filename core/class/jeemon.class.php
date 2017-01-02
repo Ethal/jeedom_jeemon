@@ -146,12 +146,13 @@ class jeemon extends eqLogic {
             $file_name = config::byKey('logerr', 'jeemon');
             $result = shell_exec('find ' . $log_path . ' -name ' . $file_name . ' -cmin +15 | wc -l');
             $jeemonCmd = jeemonCmd::byEqLogicIdAndLogicalId($this->getId(),$id);
-            if ($result == 0) {
+            if ($result != 0) {
                 $error = shell_exec('tail -1 ' . $log_path . '/' . $file_name);
                 log::add('jeemon', 'debug', 'Tail : ' . $error);
                 if ($error != $jeemonCmd->getConfiguration('error')) {
                     $jeemonCmd->setConfiguration('error', $error);
                     $jeemonCmd->save();
+                    $result = 0;
                 } else {
                     $result = 1;
                 }
