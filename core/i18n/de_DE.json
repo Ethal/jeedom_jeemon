@@ -23,8 +23,8 @@
     },
     "plugins\/jeemon\/desktop\/js\/jeemon.js": {
         "Afficher": "Anzeigen",
-        "Historiser": "Historiser",
-        "Tester": "Tester"
+        "Historiser": "Archivieren",
+        "Tester": "Testen"
     },
     "plugins\/jeemon\/core\/class\/jeemon.class.php": {
         "Sauvegarde locale de moins de 24h": "Sauvegarde locale de moins de 24h",
@@ -32,9 +32,9 @@
         "Espace disque \/ utilisé": "Espace disque \/ utilisé",
         "Espace disque \/tmp utilisé": "Espace disque \/tmp utilisé",
         "Type de montage \/tmp": "Type de montage \/tmp",
-        "Durée depuis dernier reboot": "Durée depuis dernier reboot",
-        "Charge moyenne CPU sur 15mn": "Charge moyenne CPU sur 15mn",
+        "Durée depuis dernier reboot": "Zeit seit dem letzten Neustart",
+        "Charge moyenne CPU sur 15mn": "Durchschnittliche CPU-Last von 15 Minuten",
         "Activité sur le log erreurs": "Activité sur le log erreurs",
-        "Charge mémoire": "Charge mémoire"
+        "Charge mémoire": "Speicherauslastung"
     }
 }
