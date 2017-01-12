@@ -182,7 +182,7 @@ class jeemon extends eqLogic {
             break;
             case 'tmp_space':
             $space = shell_exec('sudo df -h /tmp | tail -n 1');
-            $pattern = '/([1-9]*?)\%/';
+            $pattern = '/(\d*?)\%/';
             preg_match($pattern, $space, $matches);
             $result = $matches[1];
             break;
